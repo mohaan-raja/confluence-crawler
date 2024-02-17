@@ -1,3 +1,5 @@
+<a name="readme-top"></a>
+
 ## About The Project
 
 ### Confluence Space / Page Extractor
@@ -46,5 +48,13 @@ You can run this program using two modes.
    Ex: node index.js -s "freshsales" >> console.log
    ```
 ### NOTE: If we pass both -s (or --spaceKey) and -p (--pageId) together, program will default to pageId extraction and ignore the "-s" key. This is to avoid unintentional space extraction which would cause more resources and time to complete
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+## Contact
+
+Mohaan Raja - [@slack_handle](https://fwbuzz.slack.com/team/U05F241PXK8) - mohaan.raja@freshworks.com
+
+Project Link: [https://github.com/mohaan-raja/confluence-crawler](https://github.com/mohaan-raja/confluence-crawler)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>

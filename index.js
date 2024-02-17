@@ -6,11 +6,10 @@ const pandoc = require('node-pandoc')
 const { program } = require('commander');
 const { exit } = require("process")
 
-const spaceKey = "freshsales";
 const baseUrl = "https://confluence.freshworks.com";
 const spaceEndpoint = "rest/api/space";
-const pageUrl = `rest/api/content`;
-const spaceUrl = `${pageUrl}?spaceKey=${spaceKey}`;
+const pageEndpoint = `rest/api/content`;
+const spaceUrl = `${pageEndpoint}?spaceKey=`;
 const htmlOutputDir = "htmlOutput";
 const errorOutputDir = "errors";
 const docsOutputDir = "docs";
@@ -29,8 +28,6 @@ program.parse(process.argv);
 
 const options = program.opts();
 
-let confluenceDocsMap = [];
-
 console.log('Creating output directories....')
 try {
   !fs.existsSync(docsOutputDir) && fs.mkdirSync(docsOutputDir);
@@ -44,25 +41,24 @@ catch (error) {
 console.log('Directories created successfully.')
 
 // Function to extract the pages based on the given spaceKey
-const GetAllConfluenceDocsForGivenSpaceKey = (baseUrl, next) => {
+const getAllConfluenceDocsForGivenSpaceKey = (baseUrl, spaceKey, next) => {
     console.log(`${baseUrl}${next}`)
     axios.get(`${baseUrl}${next}`, {headers: headers})
-        .then((response) => {
+      .then((response) => {
             const confMeta = response.data;
             const pages = response.data.results;
             
             pages.forEach( (page) => {
                 console.log(page._links.self)
-                RetrievePageWithAttachments(page.id)
-                confluenceDocsMap.push({title: page.title, url: page._links.self, pageId: page.id })
+                retrievePageById(page.id)
             })
             
-            // if (confMeta._links.next) {
-            //     GetAllConfluenceDocsForGivenSpaceKey(`${baseUrl}`, `${confMeta._links.next}`)
-            // }
+            if (confMeta._links.next) {
+                getAllConfluenceDocsForGivenSpaceKey(baseUrl, spaceKey, confMeta._links.next)
+            }
             console.log(`All docs in space ${spaceKey} file creation successful`);
-    })
-    .catch((err) => {console.log(err)})
+      })
+      .catch((err) => {console.log(err)})
 }
 
 // Check whether the URL provided is appropriate / absolute URL
@@ -76,10 +72,9 @@ const isValidURL = (str) => {
 // Core logic to convert the image to its base64 format
 async function imageUrlToBase64(url, headers) {
   try {
-
     const isValid = isValidURL(url)
     if (!isValid) {
-      console.log(`Invalid URL received ${url}, modifying the URL with ${baseUrl} domain...`)
+      console.log(`Invalid URL received ${url}, prefixing with ${baseUrl} domain...`)
       url = `${baseUrl}${url}`
     } 
 
@@ -140,14 +135,17 @@ async function replaceAsync(str, regex, asyncFn) {
 }
 
 // Modular function to fetch the confluence page with the given pageId
-const RetrievePageWithAttachments = async (pageId) => {
-  const url = `https://confluence.freshworks.com/rest/api/content/${pageId}?expand=body.export_view`;
+const retrievePageById = async (pageId) => {
+  const url = `${baseUrl}/${pageEndpoint}/${pageId}?expand=body.export_view`;
   console.log(`Sourcing the url: ${url}`)
 
   axios.get(`${url}`, {headers: headers} )
     .then((response) => {
       const res = response.data
       const htmlContent = `<h1>Title: ${res.title}</h1>` + res.body.export_view.value
+
+      // Restricting the fileName to 50 chars to not exceed the limit 
+      // of the absolute path which will used during file creation
       let fileName = res.title.replace(/[^a-zA-Z0-9]/g,'_');
           fileName = fileName.split('', 50).join('');
 
@@ -212,32 +210,31 @@ const RetrievePageWithAttachments = async (pageId) => {
     })
 }
 
-const isValidEntity = (entityUrl, callback) => {
+const isExistingEntity = (entityUrl, callback) => {
   axios.get(`${entityUrl}`, {headers: headers})
     .then((res) => {
-      console.log(res.status)
       callback(null, true)
     })
     .catch((err) => {
+      // Very lame way of checking the existence
+      // Can be improved later
       callback(err.response.status == 404 ? "false" : "true")
     })
   
 }
 
-console.log(options)
-
 if (options.spaceKey && options.pageId) {
-  console.log("You have provided both SpaceKey and PageId... Program will resume with PageID")
+  console.log("You have provided both SpaceKey and PageId... Program will resume only with PageID")
   options.spaceKey = false
 }
 
 if (options.spaceKey) {
-  const spaceId = options.spaceKey
-  console.log(`Command is to crawl the confluence space ${spaceId}... \nValidating the existence of space...`)
-  isValidEntity(`${baseUrl}/${spaceEndpoint}/${spaceId}`, (err, res) => {
+  const spaceKey = options.spaceKey
+  console.log(`Command is to crawl the confluence space ${spaceKey}... \nValidating the existence of space...`)
+  isExistingEntity(`${baseUrl}/${spaceEndpoint}/${spaceKey}`, (err, res) => {
     if (res) {
-      console.log("valid")
-      GetAllConfluenceDocsForGivenSpaceKey(baseUrl, `/${spaceUrl}&start=0&limit=500`)
+      console.log(`${spaceKey} exists... Proceeding for extraction.`)
+      getAllConfluenceDocsForGivenSpaceKey(baseUrl, spaceKey, `/${spaceUrl}${spaceKey}&start=0&limit=500`)
      }
      else {
         console.log(`${spaceKey} doesn't exists. Exiting...`)
@@ -249,10 +246,10 @@ if (options.spaceKey) {
 if (options.pageId) {
   const pageId = options.pageId
   console.log(`Command is to crawl the confluence page ${pageId}... \nValidating the existence of page...`)
-   isValidEntity(`${baseUrl}/${pageUrl}/${pageId}`, (err, res) => {
+  isExistingEntity(`${baseUrl}/${pageEndpoint}/${pageId}`, (err, res) => {
     if (res) {
-      console.log("valid")
-      RetrievePageWithAttachments(pageId)
+      console.log("${pageId} exists... Proceeding for extraction.")
+      retrievePageById(pageId)
      }
      else {
         console.log(`${pageId} doesn't exists!. Exiting...`)
@@ -260,21 +257,3 @@ if (options.pageId) {
      }
   })
 }
-
-// const pages = [1426597] // [987114, 987217, 1205586, 1414594, 1426597]
-
-// pages.forEach((page) => {
-//   console.log(`Sourcing the page ${page}`)
-//   RetrievePageWithAttachments(page)
-  
-// })
-
-// const fileContents = JSON.parse(fs.readFileSync(confluencePagesFilename, 'utf8'));
-
-// fileContents.forEach((file) => {
-//   RetrievePageWithAttachments(file.pageId)
-// })
-
-//RetrievePageWithAttachments(1426597)
-
-// imageUrlToBase64("/a/a/a/", headers)
