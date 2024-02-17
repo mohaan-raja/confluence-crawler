@@ -1,6 +1,6 @@
 ## About The Project
 
-[![Confluence Space / Page Extractor]]
+### Confluence Space / Page Extractor
 
 You can use this tool to convert the confluence page into html and word document formats.
 
@@ -45,6 +45,6 @@ You can run this program using two modes.
    node index.js -s "<spaceKey>" >> console.log
    Ex: node index.js -s "freshsales" >> console.log
    ```
-# NOTE: If we pass both -s (or --spaceKey) and -p (--pageId) together, program will default to pageId extraction and ignore the "-s" key. This is to avoid unintentional space extraction which would cause more resources and time to complete
+### NOTE: If we pass both -s (or --spaceKey) and -p (--pageId) together, program will default to pageId extraction and ignore the "-s" key. This is to avoid unintentional space extraction which would cause more resources and time to complete
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
