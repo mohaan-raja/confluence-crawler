@@ -1,3 +1,0 @@
-[WARNING] Could not fetch resource undefined: replacing image with description
-[WARNING] Could not convert image 2569c0a2fc5894e64ce314a31cb1ff124d97d488.svg: "check that rsvg-convert is in path.\nrsvg-convert: createProcess: posix_spawnp: does not exist (No such file or directory)"
-[WARNING] Could not convert image b70fe720ba0904abcddfde51044e3ff61ca74654.svg: "check that rsvg-convert is in path.\nrsvg-convert: createProcess: posix_spawnp: does not exist (No such file or directory)"

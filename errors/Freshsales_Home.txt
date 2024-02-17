@@ -1,3 +1,0 @@
-Error reading SVG stdin: XML parse error: Error domain 1 code 4 on line 1 column 1 of data: Start tag expected, '<' not found
-
-[WARNING] Could not convert image ba4fd59ce0f2f688f7ec2f96582e86e0cf963195.svg: "conversion from SVG failed"
