@@ -1,0 +1,70 @@
+<h1>Title: CPQ Development setup</h1><h1 id="CPQDevelopmentsetup-TechOverview:"><span style="color: rgb(0,51,102);">Tech Overview</span>:</h1><p>     We have built Cpq application as a microservice. So that would mean, we have separate code base , separate rails app running in different stack. We are supporting GRPC protocol for our apis. Quick installation goes as below</p><ol><li>rvm install 2.6.10(rvm is prefered - rvm version 1.29.10) <br/>       (OR)<br/>For rbenv =&gt; run &quot;<span class="s1">rbenv install 2.6.10&quot;</span></li><li>clone <a href="https://github.com/freshdesk/cpq" class="external-link" rel="nofollow">https://github.com/freshdesk/cpq</a> repo</li><li>app uses rails 6</li><li>Create a new gemset <ol><li>rvm use 2.6.10                     (OR)        For rbenv run  &quot;<span style="color: rgb(32,33,36);"><span style="color: rgb(0,0,0);"><span class="s1">rbenv gemset create 2.6.10 cpq&quot;</span></span></span></li><li>rvm gemset create rails6   (OR)        For rbenv run  &quot;<span class="s1">rbenv gemset init cpq&quot;</span></li><li>rvm use 2.6.10@rails6.       (OR)        For rbenv run  &quot;<span class="s1">rbenv gemset active&quot;</span></li><li><span style="color: rgb(32,33,36);">gem install bundler -v </span><span style="color: rgb(32,33,36);"><span style="color: rgb(32,33,36);"><span style="color: rgb(0,0,0);">2.2.33<br/></span></span></span></li></ol></li><li>bundle install</li><li>rake db:migrate</li><li>Add the below line to /etc/hosts if it is not already present<blockquote><em><span class="s1">                0.0.0.0 localhost</span></em></blockquote></li><li>To boot CPQ rails app =&gt; run &quot;bundle exec gruf --backtrace-on-error&quot; (to support grpc)</li><li><span style="color: rgb(32,33,36);">Microservice will have its own background workers. to start CPQ Repo sidekiq =&gt;</span><span style="color: rgb(32,33,36);"> run &quot;bundle exec sidekiq&quot;</span></li><li>Build Freshsales front end == &gt; cd freshsales/frontend ==&gt; run &quot;<span style="color: rgb(32,33,36);">ember build --watch&quot; </span></li></ol><p><span style="color: rgb(32,33,36);">   Products and documents modules are now become default modules for all new signups..so no need to add the features and setup manually.</span></p><h4 id="CPQDevelopmentsetup-GRPCPROTO:">   GRPC PROTO:   </h4><p>         1. We have another repo where we maintain GRPC message protos <a href="https://github.com/freshdesk/cpqgrpc" class="external-link" rel="nofollow">https://github.com/freshdesk/cpqgrpc</a>  .</p><p>         2 . <strong>Protos</strong> are the basic building blocks of GRPC protocol. To learn more about <strong>protos</strong> and <strong>grpc</strong> follow below links</p><p>               1. <a href="https://developers.google.com/protocol-buffers/docs/proto3" class="external-link" rel="nofollow">https://developers.google.com/protocol-buffers/docs/proto3</a></p><p>                2. <a href="https://grpc.io/docs/tutorials/basic/ruby/" class="external-link" rel="nofollow">https://grpc.io/docs/tutorials/basic/ruby/</a></p><p>                3. <span class="s1"><a href="https://github.com/bigcommerce/gruf/blob/master/UPGRADING.md" class="external-link" rel="nofollow">https://github.com/bigcommerce/gruf</a></span></p><p><br/></p><h4 id="CPQDevelopmentsetup-Issues:">Issues:</h4><p>→ If you face any issues in running db migrations, please update shard: all to shard: none in the migration files under db/migrate folder</p><p>→ If you face any issues due to eager loading after server start, </p><p>set 'Bullet.enable=false' in the config/environments/development.rb file</p><p>→ If you face any issues in getting the choice values from redis, please execute the following rake task  as given in the step 5</p><p>'<em><span style="color: rgb(32,33,36);">bundle exec rake choice_redis_cache:build SHARD=shard_1 ACCOUNT_IDS=&lt;acid&gt;' </span></em></p><p><br/></p><p><strong style="letter-spacing: 0.0px;"><span style="color: rgb(32,33,36);"><span style="color: rgb(66,66,66);">Enabling CPQ documents:</span></span></strong><span style="color: rgb(32,33,36);"><span style="color: rgb(66,66,66);">(</span></span><span style="color: rgb(32,33,36);"><span style="color: rgb(66,66,66);">if not enabled)</span></span></p><p><span style="color: rgb(0,0,0);">1.To add document feature</span></p><pre class="c-mrkdwn__pre">     Sharding.select_shard_of(account_id) do<br/>       account = FdMultitenant::Account.find_by_id(account_id).make_current<br/>       account.add_feature(:cpq_documents)<br/>     end</pre><p><span style="color: rgb(32,33,36);"><span style="color: rgb(66,66,66);">2 . Script to be run:</span></span></p><div class="code panel pdl" style="border-width: 1px;">
+ <div class="codeHeader panelHeader pdl hide-border-bottom" style="border-bottom-width: 1px;">
+  <b class="code-title">CPQ document setup script</b><span class="collapse-source expand-control" style="display:none;"><span class="expand-control-icon icon">&nbsp;</span><span class="expand-control-text">Expand source</span></span><span class="collapse-spinner-wrapper"></span>
+ </div>
+ <div class="codeContent panelContent pdl hide-toolbar">
+  <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: ruby; gutter: false; theme: Confluence; collapse: true" data-theme="Confluence">account_id = 1613056416
+include Cpq::MigrationUtil
+Sharding.select_shard_of(account_id) do
+  account = FdMultitenant::Account.find(account_id).make_current
+  user = FdMultitenant::Account.current.users.first
+  DOCUMENT_TYPE_OPTIONS = [{ 'value' =&gt; 'Quote', 'position' =&gt; 1 },
+                           { 'value' =&gt; 'Proposal', 'position' =&gt; 2 }, 
+                           { 'value' =&gt; 'Non-disclosure agreement', 'position' =&gt; 3 },
+                           {'value' =&gt; 'Master service agreement', 'position' =&gt; 4}].freeze
+  new_configs = {}
+  run_cpq_setup(account.id, user.id, 'cpq_documents', DOCUMENT_TYPE_OPTIONS)
+  new_configs['cpq_document_enabled'] = true
+  new_configs['cpq_document_migration_status'] = MIGRATION_STATUS[:completed]
+  account.account_setting.reload
+  cpq_configs = account.account_setting.cpq_configs || {}
+  account.account_setting.cpq_configs = cpq_configs.merge(new_configs)
+  status = account.account_setting.save
+  if status
+    puts "CpqDocument Form was created successfully for account #{account_id}"
+  else
+    puts "There is some problem in CpqDocument Form creation for account #{account_id}"
+  end
+end</pre>
+ </div>
+</div><p class="auto-cursor-target"><span style="letter-spacing: 0.0px;">3. Query to add cpq addon to subscriptions table</span></p><div class="code panel pdl" style="border-width: 1px;">
+ <div class="codeHeader panelHeader pdl hide-border-bottom" style="border-bottom-width: 1px;">
+  <b class="code-title">Query to add cpq Addon </b><span class="collapse-source expand-control" style="display:none;"><span class="expand-control-icon icon">&nbsp;</span><span class="expand-control-text">Expand source</span></span><span class="collapse-spinner-wrapper"></span>
+ </div>
+ <div class="codeContent panelContent pdl hide-toolbar">
+  <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: sql; gutter: false; theme: Confluence; collapse: true" data-theme="Confluence">INSERT INTO `subscription_addons` (`id`, `name`, `amount`, `renewal_period`, `addon_type`, `created_at`, `updated_at`, `units`, `subscription_id`, `account_id`)
+VALUES
+	(1, 'cpqAddon',1.00, 1, 1,'2020-11-11 09:15:43','2020-11-11 09:15:43',30,228,1613056416);</pre>
+ </div>
+</div><p class="auto-cursor-target">4. Add extra cpq-addon license to your role.</p><div class="code panel pdl" style="border-width: 1px;">
+ <div class="codeHeader panelHeader pdl hide-border-bottom" style="border-bottom-width: 1px;">
+  <b class="code-title">Script to add cpa addon license</b><span class="collapse-source expand-control" style="display:none;"><span class="expand-control-icon icon">&nbsp;</span><span class="expand-control-text">Expand source</span></span><span class="collapse-spinner-wrapper"></span>
+ </div>
+ <div class="codeContent panelContent pdl hide-toolbar">
+  <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: ruby; gutter: false; theme: Confluence; collapse: true" data-theme="Confluence">def add_cpq_license(account_id, agent_limit)
+  Sharding.select_shard_of(account_id) do
+    account = FdMultitenant::Account.find(account_id).make_current
+    cpq_addon_config = Subscription::Addon.where(name: "cpqAddon").first
+    if cpq_addon_config.blank?
+      addon = Subscription::Addon.new
+      addon.name = 'cpqAddon'
+      addon.addon_type = SubscriptionConstants::ADDON_TYPE[:recurring]
+      addon.subscription_id = account.subscription.id
+      addon.amount = 1.0
+      addon.units = agent_limit
+      addon.renewal_period = 1
+      addon.save!
+    end
+    account.add_feature(:cpq_documents)
+    account.invalidate_sessions_version_from_client_cache
+  end
+end
+add_cpq_license(1678954323, 5)</pre>
+ </div>
+</div><p><span style="color: rgb(32,33,36);">5. To Populate choice ids in redis</span>           </p><p><em><span style="color: rgb(32,33,36);">bundle exec rake choice_redis_cache:build SHARD=shard_1 ACCOUNT_IDS=&lt;acid&gt;</span></em></p><p><br/></p><p><strong><span style="color: rgb(32,33,36);">Troubleshoot:</span></strong></p><p><strong>Problem 01:</strong> If you faced Segmentation fault: 11 error while building frontend ember. Add the following to package.json and do yarn</p><pre class="c-mrkdwn__pre">&quot;resolutions&quot;: {<br/>    &quot;ember-intl-tel-input/ember-cli-sass&quot;: &quot;7.1.4&quot;<br/>  },<br/><br/></pre><p class="c-mrkdwn__pre"><strong>Problem 02: </strong>If you are facing issue with installing a new version of ruby with rbenv/rvm with below error: </p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: actionscript3; gutter: false; theme: Confluence" data-theme="Confluence">configure: error: something wrong with LDFLAGS=&quot;-L/Users/gdaneti/.rbenv/versions/2.6.10/lib&quot;</pre>
+</div></div><p> Please try to comment the PATH and LIBRARY_PATH variables in your zshrc/bash_profile files.</p><p><br/><strong>Problem 03:</strong> If you you are facing issue on creating products in fsales app with the below error:</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: actionscript3; gutter: false; theme: Confluence" data-theme="Confluence">error: Metadata too long, risks exceeding http2 trailing metadata limit.</pre>
+</div></div><p>This might be misleading error(it is a warning only), check if there is an error as below:</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: ruby; gutter: false; theme: Confluence" data-theme="Confluence">Mysql2::Error: Field &#39;id&#39; doesn&#39;t have a default value</pre>
+</div></div><p>Then you can try adding <strong>strict: false </strong>for the dev shards in database.yml file. </p>

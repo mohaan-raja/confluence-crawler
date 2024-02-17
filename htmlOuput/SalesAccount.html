@@ -1,0 +1,1358 @@
+<h1>Title: SalesAccount</h1><p class="auto-cursor-target"><strong>FSA:</strong></p><div class="code panel pdl" style="border-width: 1px;">
+ <div class="codeHeader panelHeader pdl hide-border-bottom" style="border-bottom-width: 1px;">
+  <b class="code-title">SALESACCOUNT - create</b><span class="collapse-source expand-control" style="display:none;"><span class="expand-control-icon icon">&nbsp;</span><span class="expand-control-text">Expand source</span></span><span class="collapse-spinner-wrapper"></span>
+ </div>
+ <div class="codeContent panelContent pdl hide-toolbar">
+  <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: actionscript3; gutter: false; theme: Emacs; collapse: true" data-theme="Emacs">{
+  "account_id": "47945",
+  "organisation_id": "152668702636558766",
+  "bundle_id": "",
+  "pod": "useast1-pod1",
+  "region": "us-east-1",
+  "payload_type": "sales_account_create",
+  "payload_version": "2.0",
+  "payload": {
+    "model": "SalesAccount",
+    "actor": {
+      "id": 2000072129,
+      "name": "Prakash Thiyagarajan",
+      "email": "prakash.thiyagarajan@freshworks.com",
+      "job_title": null,
+      "work_number": null,
+      "mobile_number": null,
+      "language": "en",
+      "time_zone": "Chennai",
+      "is_active": true,
+      "deal_pipeline_id": 45992,
+      "is_forgotten": false,
+      "created_at": "2019-06-11T14:32:29Z",
+      "updated_at": "2019-06-12T14:35:05Z",
+      "uuid": "152668707262876185",
+      "type": "user"
+    },
+    "action": "create",
+    "action_epoch": 1620293076.526762,
+    "uuid": "e016bc0aae4c11eb9207024222ac4be7",
+    "account_full_domain": "athish.freshsales.io",
+    "event_timestamp": "2021-05-06T09:24:36.526Z",
+    "product_push_timestamp": "2021-05-06T09:24:37.071Z",
+    "mcr_account_id": "",
+    "bundle_id": "",
+    "entity_name": "sales_account",
+    "event_info": {
+      "ip_address": "13.234.188.23"
+    },
+    "model_properties": {
+      "name": {
+        "label": "Name",
+        "type": "text",
+        "value": "Freshdesk"
+      },
+      "owner_id": {
+        "label": "Owner",
+        "type": "dropdown",
+        "value": 2000072129
+      },
+      "number_of_employees": {
+        "label": "Number of employees",
+        "type": "dropdown",
+        "value": 1001
+      },
+      "annual_revenue": {
+        "label": "Annual revenue",
+        "type": "decimal",
+        "value": 300
+      },
+      "tags": {
+        "label": "Tags",
+        "type": "auto_complete",
+        "value": [
+          {
+            "id": 2000038192,
+            "name": "unicorn",
+            "created_at": "2021-05-06T09:24:36Z",
+            "updated_at": "2021-05-06T09:24:36Z",
+            "is_public": true,
+            "creator_id": 2000072129,
+            "tag_type_id": 1,
+            "_association_id": 8316341
+          }
+        ]
+      },
+      "website": {
+        "label": "Website",
+        "type": "url",
+        "value": "www.freshdesk.com"
+      },
+      "phone": {
+        "label": "Phone",
+        "type": "phone_number",
+        "value": "9876543210"
+      },
+      "industry_type_id": {
+        "label": "Industry type",
+        "type": "dropdown",
+        "value": 2002406107
+      },
+      "business_type_id": {
+        "label": "Business type",
+        "type": "dropdown",
+        "value": 2000355182
+      },
+      "territory_id": {
+        "label": "Territory",
+        "type": "dropdown",
+        "value": 2000011024
+      },
+      "address": {
+        "label": "Address",
+        "type": "text",
+        "value": "Perungudi"
+      },
+      "city": {
+        "label": "City",
+        "type": "text",
+        "value": "Chennai"
+      },
+      "state": {
+        "label": "State",
+        "type": "text",
+        "value": "tamilnadu"
+      },
+      "zipcode": {
+        "label": "Zipcode",
+        "type": "text",
+        "value": "600042"
+      },
+      "country": {
+        "label": "Country",
+        "type": "text",
+        "value": "India"
+      },
+      "facebook": {
+        "label": "Facebook",
+        "type": "text",
+        "value": "www.fb.com"
+      },
+      "twitter": {
+        "label": "Twitter",
+        "type": "text",
+        "value": "www.tweet.com"
+      },
+      "linkedin": {
+        "label": "LinkedIn",
+        "type": "text",
+        "value": "www.lin.com"
+      },
+      "last_contacted": {
+        "label": "Last contacted time",
+        "type": "date_time",
+        "value": null
+      },
+      "last_contacted_mode": {
+        "label": "Last contacted mode",
+        "type": "dropdown",
+        "value": null
+      },
+      "last_contacted_via_chat": {
+        "label": "Last contacted via chat",
+        "type": "date_time",
+        "value": null
+      },
+      "last_contacted_sales_activity_mode": {
+        "label": "Last activity type",
+        "type": "dropdown",
+        "value": null
+      },
+      "recent_note": {
+        "label": "Recent note",
+        "type": "paragraph",
+        "value": null
+      },
+      "last_contacted_via_sales_activity": {
+        "label": "Last activity date",
+        "type": "date_time",
+        "value": null
+      },
+      "completed_sales_sequences": {
+        "label": "Completed sales sequences",
+        "type": "multi_select_dropdown",
+        "value": []
+      },
+      "active_sales_sequences": {
+        "label": "Active sales sequences",
+        "type": "multi_select_dropdown",
+        "value": []
+      },
+      "created_at": {
+        "label": "Created at",
+        "type": "date_time",
+        "value": "2021-05-06T09:24:36Z"
+      },
+      "updater_id": {
+        "label": "Updated by",
+        "type": "dropdown",
+        "value": 2000072129
+      },
+      "updated_at": {
+        "label": "Updated at",
+        "type": "date_time",
+        "value": "2021-05-06T09:24:36Z"
+      },
+      "last_assigned_at": {
+        "label": "Last assigned at",
+        "type": "date_time",
+        "value": "2021-05-06T09:24:37Z"
+      },
+      "id": 2010663510,
+      "is_deleted": false,
+      "open_deals_amount": {
+        "label": "Open deals amount",
+        "dom_type": "decimal",
+        "value": null
+      },
+      "merged_to": 0,
+      "first_assigned_at": {
+        "label": "First assigned at",
+        "dom_type": "date_time",
+        "value": "2021-05-06T09:24:37Z"
+      },
+      "first_contacted": {
+        "label": "First contacted",
+        "dom_type": "date_time",
+        "value": null
+      },
+      "won_deals_amount": {
+        "label": "Won deals amount",
+        "dom_type": "decimal",
+        "value": null
+      },
+      "parent_owner_id": null,
+      "parent_territory_id": null,
+      "import_csv_id": {
+        "label": "Import label",
+        "dom_type": "multi_select_dropdown",
+        "value": []
+      },
+      "import_id": null,
+      "avatar": null,
+      "team_user_ids": [],
+      "status": "Active",
+      "mcr_id": null,
+      "creator_id": {
+        "label": "Created by",
+        "type": "dropdown",
+        "value": 2000072129
+      },
+      "custom_fields": [
+        {
+          "name": "cf_text",
+          "label": "text",
+          "type": "text",
+          "value": "sample text content",
+          "column": "cf_str01"
+        },
+        {
+          "name": "cf_text-area",
+          "label": "text-area",
+          "type": "paragraph",
+          "value": "sample text area content",
+          "column": "cf_text01"
+        },
+        {
+          "name": "cf_number",
+          "label": "number",
+          "type": "decimal",
+          "value": 567,
+          "column": "cf_decimal01"
+        },
+        {
+          "name": "cf_check",
+          "label": "check",
+          "type": "checkbox",
+          "value": true,
+          "column": "cf_boolean01"
+        },
+        {
+          "name": "cf_date",
+          "label": "date",
+          "type": "date_time",
+          "value": "2021-05-25T18:30:00Z",
+          "column": "cf_datetime01"
+        },
+        {
+          "name": "cf_multiselect",
+          "label": "multiselect",
+          "type": "multi_select_dropdown",
+          "value": [
+            {
+              "id": "180427094745591703",
+              "value": "2"
+            },
+            {
+              "id": "180427094745591806",
+              "value": "5"
+            }
+          ],
+          "column": "cf_text02"
+        },
+        {
+          "name": "cf_dropdown",
+          "label": "dropdown",
+          "type": "dropdown",
+          "value": "3",
+          "column": "cf_bigint52",
+          "choice_id": "180427094709818027"
+        },
+        {
+          "name": "cf_radio",
+          "label": "radio",
+          "type": "radio",
+          "value": "2",
+          "column": "cf_bigint53",
+          "choice_id": "180427094726594625"
+        }
+      ]
+    },
+    "associations": {
+      "owner": {
+        "id": 2000072129,
+        "name": "Prakash Thiyagarajan",
+        "type": "user",
+        "email": "prakash.thiyagarajan@freshworks.com",
+        "is_active": true,
+        "work_number": null,
+        "mobile_number": null,
+        "time_zone": "Chennai",
+        "created_at": "2019-06-11T14:32:29Z",
+        "updated_at": "2019-06-12T14:35:05Z",
+        "deal_pipeline_id": 45992,
+        "job_title": null,
+        "uuid": "152668707262876185"
+      },
+      "territory": {
+        "id": 2000011024,
+        "name": "india",
+        "position": 7
+      },
+      "industry_type": {
+        "id": 2002406107,
+        "name": "Technology",
+        "position": 62
+      },
+      "business_type": {
+        "id": 2000355182,
+        "name": "Competitor",
+        "position": 2
+      },
+      "parent_sales_account": null,
+      "updater": {
+        "id": 2000072129,
+        "name": "Prakash Thiyagarajan",
+        "type": "user",
+        "email": "prakash.thiyagarajan@freshworks.com",
+        "is_active": true,
+        "work_number": null,
+        "mobile_number": null,
+        "time_zone": "Chennai",
+        "created_at": "2019-06-11T14:32:29Z",
+        "updated_at": "2019-06-12T14:35:05Z",
+        "deal_pipeline_id": 45992,
+        "job_title": null,
+        "uuid": "152668707262876185"
+      },
+      "team_users": [],
+      "creator": {
+        "id": 2000072129,
+        "name": "Prakash Thiyagarajan",
+        "type": "user",
+        "email": "prakash.thiyagarajan@freshworks.com",
+        "is_active": true,
+        "work_number": null,
+        "mobile_number": null,
+        "time_zone": "Chennai",
+        "created_at": "2019-06-11T14:32:29Z",
+        "updated_at": "2019-06-12T14:35:05Z",
+        "deal_pipeline_id": 45992,
+        "job_title": null,
+        "uuid": "152668707262876185"
+      },
+      "parent_sales_account_owner": null
+    }
+  }
+}</pre>
+ </div>
+</div><div class="code panel pdl" style="border-width: 1px;">
+ <div class="codeHeader panelHeader pdl hide-border-bottom" style="border-bottom-width: 1px;">
+  <b class="code-title">SALESACCOUNT - update</b><span class="collapse-source expand-control" style="display:none;"><span class="expand-control-icon icon">&nbsp;</span><span class="expand-control-text">Expand source</span></span><span class="collapse-spinner-wrapper"></span>
+ </div>
+ <div class="codeContent panelContent pdl hide-toolbar">
+  <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: actionscript3; gutter: false; theme: Emacs; collapse: true" data-theme="Emacs">{
+  "account_id": "47945",
+  "organisation_id": "152668702636558766",
+  "bundle_id": "",
+  "pod": "useast1-pod1",
+  "region": "us-east-1",
+  "payload_type": "sales_account_update",
+  "payload_version": "2.0",
+  "payload": {
+    "model": "SalesAccount",
+    "actor": {
+      "id": 2000072129,
+      "name": "Prakash Thiyagarajan",
+      "email": "prakash.thiyagarajan@freshworks.com",
+      "job_title": null,
+      "work_number": null,
+      "mobile_number": null,
+      "language": "en",
+      "time_zone": "Chennai",
+      "is_active": true,
+      "deal_pipeline_id": 45992,
+      "is_forgotten": false,
+      "created_at": "2019-06-11T14:32:29Z",
+      "updated_at": "2019-06-12T14:35:05Z",
+      "uuid": "152668707262876185",
+      "type": "user"
+    },
+    "action": "update",
+    "action_epoch": 1620293774.0559313,
+    "uuid": "7fd93f32ae4e11eb8bea024268a1de91",
+    "account_full_domain": "athish.freshsales.io",
+    "event_timestamp": "2021-05-06T09:36:14.055Z",
+    "product_push_timestamp": "2021-05-06T09:36:14.368Z",
+    "mcr_account_id": "",
+    "bundle_id": "",
+    "entity_name": "sales_account",
+    "event_info": {
+      "ip_address": "13.234.188.23"
+    },
+    "model_properties": {
+      "name": {
+        "label": "Name",
+        "type": "text",
+        "value": "Freshsales"
+      },
+      "owner_id": {
+        "label": "Owner",
+        "type": "dropdown",
+        "value": 2000072129
+      },
+      "number_of_employees": {
+        "label": "Number of employees",
+        "type": "dropdown",
+        "value": 5001
+      },
+      "annual_revenue": {
+        "label": "Annual revenue",
+        "type": "decimal",
+        "value": 310
+      },
+      "tags": {
+        "label": "Tags",
+        "type": "auto_complete",
+        "value": [
+          {
+            "id": 2000038194,
+            "name": "mid-market",
+            "created_at": "2021-05-06T09:36:13Z",
+            "updated_at": "2021-05-06T09:36:13Z",
+            "is_public": true,
+            "creator_id": 2000072129,
+            "tag_type_id": 1,
+            "_association_id": 8316357
+          }
+        ]
+      },
+      "website": {
+        "label": "Website",
+        "type": "url",
+        "value": "www.freshsales.io"
+      },
+      "phone": {
+        "label": "Phone",
+        "type": "phone_number",
+        "value": "9876543289"
+      },
+      "industry_type_id": {
+        "label": "Industry type",
+        "type": "dropdown",
+        "value": 2002406100
+      },
+      "business_type_id": {
+        "label": "Business type",
+        "type": "dropdown",
+        "value": 2000355183
+      },
+      "territory_id": {
+        "label": "Territory",
+        "type": "dropdown",
+        "value": 2000010947
+      },
+      "address": {
+        "label": "Address",
+        "type": "text",
+        "value": "Velachery"
+      },
+      "city": {
+        "label": "City",
+        "type": "text",
+        "value": "chennai"
+      },
+      "state": {
+        "label": "State",
+        "type": "text",
+        "value": "TamilNadu"
+      },
+      "zipcode": {
+        "label": "Zipcode",
+        "type": "text",
+        "value": "600142"
+      },
+      "country": {
+        "label": "Country",
+        "type": "text",
+        "value": "INDIA"
+      },
+      "facebook": {
+        "label": "Facebook",
+        "type": "text",
+        "value": "www.faceb.com"
+      },
+      "twitter": {
+        "label": "Twitter",
+        "type": "text",
+        "value": "www.twitter.com"
+      },
+      "linkedin": {
+        "label": "LinkedIn",
+        "type": "text",
+        "value": "www.linked.com"
+      },
+      "last_contacted": {
+        "label": "Last contacted time",
+        "type": "date_time",
+        "value": null
+      },
+      "last_contacted_mode": {
+        "label": "Last contacted mode",
+        "type": "dropdown",
+        "value": null
+      },
+      "last_contacted_via_chat": {
+        "label": "Last contacted via chat",
+        "type": "date_time",
+        "value": null
+      },
+      "last_contacted_sales_activity_mode": {
+        "label": "Last activity type",
+        "type": "dropdown",
+        "value": null
+      },
+      "recent_note": {
+        "label": "Recent note",
+        "type": "paragraph",
+        "value": null
+      },
+      "last_contacted_via_sales_activity": {
+        "label": "Last activity date",
+        "type": "date_time",
+        "value": null
+      },
+      "completed_sales_sequences": {
+        "label": "Completed sales sequences",
+        "type": "multi_select_dropdown",
+        "value": []
+      },
+      "active_sales_sequences": {
+        "label": "Active sales sequences",
+        "type": "multi_select_dropdown",
+        "value": []
+      },
+      "created_at": {
+        "label": "Created at",
+        "type": "date_time",
+        "value": "2021-05-06T09:24:36Z"
+      },
+      "updater_id": {
+        "label": "Updated by",
+        "type": "dropdown",
+        "value": 2000072129
+      },
+      "updated_at": {
+        "label": "Updated at",
+        "type": "date_time",
+        "value": "2021-05-06T09:36:13Z"
+      },
+      "last_assigned_at": {
+        "label": "Last assigned at",
+        "type": "date_time",
+        "value": "2021-05-06T09:24:37Z"
+      },
+      "id": 2010663510,
+      "is_deleted": false,
+      "open_deals_amount": {
+        "label": "Open deals amount",
+        "dom_type": "decimal",
+        "value": null
+      },
+      "merged_to": 0,
+      "first_assigned_at": {
+        "label": "First assigned at",
+        "dom_type": "date_time",
+        "value": "2021-05-06T09:24:37Z"
+      },
+      "first_contacted": {
+        "label": "First contacted",
+        "dom_type": "date_time",
+        "value": null
+      },
+      "won_deals_amount": {
+        "label": "Won deals amount",
+        "dom_type": "decimal",
+        "value": null
+      },
+      "parent_owner_id": null,
+      "parent_territory_id": null,
+      "import_csv_id": {
+        "label": "Import label",
+        "dom_type": "multi_select_dropdown",
+        "value": []
+      },
+      "import_id": null,
+      "avatar": null,
+      "team_user_ids": [],
+      "status": "Active",
+      "mcr_id": null,
+      "creator_id": {
+        "label": "Created by",
+        "type": "dropdown",
+        "value": 2000072129
+      },
+      "custom_fields": [
+        {
+          "name": "cf_text",
+          "label": "text",
+          "type": "text",
+          "value": "It's a text box",
+          "column": "cf_str01"
+        },
+        {
+          "name": "cf_text-area",
+          "label": "text-area",
+          "type": "paragraph",
+          "value": "its a text area",
+          "column": "cf_text01"
+        },
+        {
+          "name": "cf_number",
+          "label": "number",
+          "type": "decimal",
+          "value": 56790,
+          "column": "cf_decimal01"
+        },
+        {
+          "name": "cf_check",
+          "label": "check",
+          "type": "checkbox",
+          "value": false,
+          "column": "cf_boolean01"
+        },
+        {
+          "name": "cf_date",
+          "label": "date",
+          "type": "date_time",
+          "value": "2021-05-26T18:30:00Z",
+          "column": "cf_datetime01"
+        },
+        {
+          "name": "cf_multiselect",
+          "label": "multiselect",
+          "type": "multi_select_dropdown",
+          "value": [
+            {
+              "id": "180427094745591703",
+              "value": "2"
+            },
+            {
+              "id": "180427094745591746",
+              "value": "3"
+            }
+          ],
+          "column": "cf_text02"
+        },
+        {
+          "name": "cf_dropdown",
+          "label": "dropdown",
+          "type": "dropdown",
+          "value": "2",
+          "column": "cf_bigint52",
+          "choice_id": "180427094709817949"
+        },
+        {
+          "name": "cf_radio",
+          "label": "radio",
+          "type": "radio",
+          "value": "5",
+          "column": "cf_bigint53",
+          "choice_id": "180427094726594728"
+        }
+      ]
+    },
+    "associations": {
+      "owner": {
+        "id": 2000072129,
+        "name": "Prakash Thiyagarajan",
+        "type": "user",
+        "email": "prakash.thiyagarajan@freshworks.com",
+        "is_active": true,
+        "work_number": null,
+        "mobile_number": null,
+        "time_zone": "Chennai",
+        "created_at": "2019-06-11T14:32:29Z",
+        "updated_at": "2019-06-12T14:35:05Z",
+        "deal_pipeline_id": 45992,
+        "job_title": null,
+        "uuid": "152668707262876185"
+      },
+      "territory": {
+        "id": 2000010947,
+        "name": "ter12",
+        "position": 5
+      },
+      "industry_type": {
+        "id": 2002406100,
+        "name": "Retail &amp; Wholesale",
+        "position": 55
+      },
+      "business_type": {
+        "id": 2000355183,
+        "name": "Customer",
+        "position": 3
+      },
+      "parent_sales_account": null,
+      "updater": {
+        "id": 2000072129,
+        "name": "Prakash Thiyagarajan",
+        "type": "user",
+        "email": "prakash.thiyagarajan@freshworks.com",
+        "is_active": true,
+        "work_number": null,
+        "mobile_number": null,
+        "time_zone": "Chennai",
+        "created_at": "2019-06-11T14:32:29Z",
+        "updated_at": "2019-06-12T14:35:05Z",
+        "deal_pipeline_id": 45992,
+        "job_title": null,
+        "uuid": "152668707262876185"
+      },
+      "team_users": [],
+      "creator": {
+        "id": 2000072129,
+        "name": "Prakash Thiyagarajan",
+        "type": "user",
+        "email": "prakash.thiyagarajan@freshworks.com",
+        "is_active": true,
+        "work_number": null,
+        "mobile_number": null,
+        "time_zone": "Chennai",
+        "created_at": "2019-06-11T14:32:29Z",
+        "updated_at": "2019-06-12T14:35:05Z",
+        "deal_pipeline_id": 45992,
+        "job_title": null,
+        "uuid": "152668707262876185"
+      },
+      "parent_sales_account_owner": null
+    },
+    "changes": {
+      "model_changes": {
+        "name": [
+          "Freshdesk",
+          "Freshsales"
+        ],
+        "number_of_employees": [
+          1001,
+          5001
+        ],
+        "annual_revenue": [
+          300,
+          310
+        ],
+        "website": [
+          "www.freshdesk.com",
+          "www.freshsales.io"
+        ],
+        "phone": [
+          "9876543210",
+          "9876543289"
+        ],
+        "industry_type_id": [
+          2002406107,
+          2002406100
+        ],
+        "business_type_id": [
+          2000355182,
+          2000355183
+        ],
+        "territory_id": [
+          2000011024,
+          2000010947
+        ],
+        "address": [
+          "Perungudi",
+          "Velachery"
+        ],
+        "city": [
+          "Chennai",
+          "chennai"
+        ],
+        "state": [
+          "tamilnadu",
+          "TamilNadu"
+        ],
+        "zipcode": [
+          "600042",
+          "600142"
+        ],
+        "country": [
+          "India",
+          "INDIA"
+        ],
+        "facebook": [
+          "www.fb.com",
+          "www.faceb.com"
+        ],
+        "twitter": [
+          "www.tweet.com",
+          "www.twitter.com"
+        ],
+        "linkedin": [
+          "www.lin.com",
+          "www.linked.com"
+        ],
+        "updated_at": [
+          "2021-05-06T09:24:36Z",
+          "2021-05-06T09:36:13Z"
+        ],
+        "tags": {
+          "added": [
+            {
+              "_association_id": 8316357,
+              "id": 2000038194,
+              "name": "mid-market"
+            }
+          ],
+          "removed": [
+            {
+              "_association_id": 8316341,
+              "id": 2000038192,
+              "name": "unicorn"
+            }
+          ]
+        },
+        "custom_fields": {
+          "cf_text": [
+            "sample text content",
+            "It's a text box"
+          ],
+          "cf_text-area": [
+            "sample text area content",
+            "its a text area"
+          ],
+          "cf_number": [
+            567,
+            56790
+          ],
+          "cf_check": [
+            true,
+            false
+          ],
+          "cf_date": [
+            "2021-05-25T18:30:00Z",
+            "2021-05-26T18:30:00Z"
+          ],
+          "cf_multiselect": {
+            "removed": [
+              {
+                "id": "180427094745591806",
+                "value": "5"
+              }
+            ],
+            "added": [
+              {
+                "id": "180427094745591746",
+                "value": "3"
+              }
+            ]
+          },
+          "cf_dropdown": [
+            "3",
+            "2"
+          ],
+          "cf_radio": [
+            "2",
+            "5"
+          ]
+        }
+      },
+      "system_changes": {},
+      "misc_changes": {}
+    }
+  }
+}</pre>
+ </div>
+</div><div class="code panel pdl" style="border-width: 1px;">
+ <div class="codeHeader panelHeader pdl hide-border-bottom" style="border-bottom-width: 1px;">
+  <b class="code-title">SALESACCOUNT - delete</b><span class="collapse-source expand-control" style="display:none;"><span class="expand-control-icon icon">&nbsp;</span><span class="expand-control-text">Expand source</span></span><span class="collapse-spinner-wrapper"></span>
+ </div>
+ <div class="codeContent panelContent pdl hide-toolbar">
+  <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: actionscript3; gutter: false; theme: Emacs; collapse: true" data-theme="Emacs">{
+  "account_id": "47945",
+  "organisation_id": "152668702636558766",
+  "bundle_id": "",
+  "pod": "useast1-pod1",
+  "region": "us-east-1",
+  "payload_type": "sales_account_update",
+  "payload_version": "2.0",
+  "payload": {
+    "model": "SalesAccount",
+    "actor": {
+      "id": 2000072129,
+      "name": "Prakash Thiyagarajan",
+      "email": "prakash.thiyagarajan@freshworks.com",
+      "job_title": null,
+      "work_number": null,
+      "mobile_number": null,
+      "language": "en",
+      "time_zone": "Chennai",
+      "is_active": true,
+      "deal_pipeline_id": 45992,
+      "is_forgotten": false,
+      "created_at": "2019-06-11T14:32:29Z",
+      "updated_at": "2019-06-12T14:35:05Z",
+      "uuid": "152668707262876185",
+      "type": "user"
+    },
+    "action": "update",
+    "action_epoch": 1620310684.9372714,
+    "uuid": "df84f58aae7511ebb7de024268a1de91",
+    "account_full_domain": "athish.freshsales.io",
+    "event_timestamp": "2021-05-06T14:18:04.937Z",
+    "product_push_timestamp": "2021-05-06T14:18:05.401Z",
+    "mcr_account_id": "",
+    "bundle_id": "",
+    "entity_name": "sales_account",
+    "event_info": {
+      "ip_address": "137.83.204.108"
+    },
+    "model_properties": {
+      "name": {
+        "label": "Name",
+        "type": "text",
+        "value": "Freshsales"
+      },
+      "owner_id": {
+        "label": "Owner",
+        "type": "dropdown",
+        "value": 2000072129
+      },
+      "number_of_employees": {
+        "label": "Number of employees",
+        "type": "dropdown",
+        "value": 5001
+      },
+      "annual_revenue": {
+        "label": "Annual revenue",
+        "type": "decimal",
+        "value": 310
+      },
+      "tags": {
+        "label": "Tags",
+        "type": "auto_complete",
+        "value": [
+          {
+            "id": 2000038194,
+            "name": "mid-market",
+            "created_at": "2021-05-06T09:36:13Z",
+            "updated_at": "2021-05-06T09:36:13Z",
+            "is_public": true,
+            "creator_id": 2000072129,
+            "tag_type_id": 1,
+            "_association_id": 8316357
+          }
+        ]
+      },
+      "website": {
+        "label": "Website",
+        "type": "url",
+        "value": "www.freshsales.io"
+      },
+      "phone": {
+        "label": "Phone",
+        "type": "phone_number",
+        "value": "9876543289"
+      },
+      "industry_type_id": {
+        "label": "Industry type",
+        "type": "dropdown",
+        "value": 2002406100
+      },
+      "business_type_id": {
+        "label": "Business type",
+        "type": "dropdown",
+        "value": 2000355183
+      },
+      "territory_id": {
+        "label": "Territory",
+        "type": "dropdown",
+        "value": 2000010947
+      },
+      "address": {
+        "label": "Address",
+        "type": "text",
+        "value": "Velachery"
+      },
+      "city": {
+        "label": "City",
+        "type": "text",
+        "value": "chennai"
+      },
+      "state": {
+        "label": "State",
+        "type": "text",
+        "value": "TamilNadu"
+      },
+      "zipcode": {
+        "label": "Zipcode",
+        "type": "text",
+        "value": "600142"
+      },
+      "country": {
+        "label": "Country",
+        "type": "text",
+        "value": "INDIA"
+      },
+      "facebook": {
+        "label": "Facebook",
+        "type": "text",
+        "value": "www.faceb.com"
+      },
+      "twitter": {
+        "label": "Twitter",
+        "type": "text",
+        "value": "www.twitter.com"
+      },
+      "linkedin": {
+        "label": "LinkedIn",
+        "type": "text",
+        "value": "www.linked.com"
+      },
+      "last_contacted": {
+        "label": "Last contacted time",
+        "type": "date_time",
+        "value": null
+      },
+      "last_contacted_mode": {
+        "label": "Last contacted mode",
+        "type": "dropdown",
+        "value": null
+      },
+      "last_contacted_via_chat": {
+        "label": "Last contacted via chat",
+        "type": "date_time",
+        "value": null
+      },
+      "last_contacted_sales_activity_mode": {
+        "label": "Last activity type",
+        "type": "dropdown",
+        "value": null
+      },
+      "recent_note": {
+        "label": "Recent note",
+        "type": "paragraph",
+        "value": null
+      },
+      "last_contacted_via_sales_activity": {
+        "label": "Last activity date",
+        "type": "date_time",
+        "value": null
+      },
+      "completed_sales_sequences": {
+        "label": "Completed sales sequences",
+        "type": "multi_select_dropdown",
+        "value": []
+      },
+      "active_sales_sequences": {
+        "label": "Active sales sequences",
+        "type": "multi_select_dropdown",
+        "value": []
+      },
+      "created_at": {
+        "label": "Created at",
+        "type": "date_time",
+        "value": "2021-05-06T09:24:36Z"
+      },
+      "updater_id": {
+        "label": "Updated by",
+        "type": "dropdown",
+        "value": 2000072129
+      },
+      "updated_at": {
+        "label": "Updated at",
+        "type": "date_time",
+        "value": "2021-05-06T14:18:04Z"
+      },
+      "last_assigned_at": {
+        "label": "Last assigned at",
+        "type": "date_time",
+        "value": "2021-05-06T09:24:37Z"
+      },
+      "id": 2010663510,
+      "is_deleted": true,
+      "open_deals_amount": {
+        "label": "Open deals amount",
+        "dom_type": "decimal",
+        "value": "0.0"
+      },
+      "merged_to": 0,
+      "first_assigned_at": {
+        "label": "First assigned at",
+        "dom_type": "date_time",
+        "value": "2021-05-06T09:24:37Z"
+      },
+      "first_contacted": {
+        "label": "First contacted",
+        "dom_type": "date_time",
+        "value": null
+      },
+      "won_deals_amount": {
+        "label": "Won deals amount",
+        "dom_type": "decimal",
+        "value": "0.0"
+      },
+      "parent_owner_id": null,
+      "parent_territory_id": null,
+      "import_csv_id": {
+        "label": "Import label",
+        "dom_type": "multi_select_dropdown",
+        "value": []
+      },
+      "import_id": null,
+      "avatar": null,
+      "team_user_ids": [],
+      "status": "Deleted",
+      "mcr_id": null,
+      "creator_id": {
+        "label": "Created by",
+        "type": "dropdown",
+        "value": 2000072129
+      },
+      "custom_fields": [
+        {
+          "name": "cf_text",
+          "label": "text",
+          "type": "text",
+          "value": "It's a text box",
+          "column": "cf_str01"
+        },
+        {
+          "name": "cf_text-area",
+          "label": "text-area",
+          "type": "paragraph",
+          "value": "its a text area",
+          "column": "cf_text01"
+        },
+        {
+          "name": "cf_number",
+          "label": "number",
+          "type": "decimal",
+          "value": 56790,
+          "column": "cf_decimal01"
+        },
+        {
+          "name": "cf_check",
+          "label": "check",
+          "type": "checkbox",
+          "value": false,
+          "column": "cf_boolean01"
+        },
+        {
+          "name": "cf_date",
+          "label": "date",
+          "type": "date_time",
+          "value": "2021-05-26T18:30:00Z",
+          "column": "cf_datetime01"
+        },
+        {
+          "name": "cf_multiselect",
+          "label": "multiselect",
+          "type": "multi_select_dropdown",
+          "value": [
+            {
+              "id": "180427094745591703",
+              "value": "2"
+            },
+            {
+              "id": "180427094745591746",
+              "value": "3"
+            }
+          ],
+          "column": "cf_text02"
+        },
+        {
+          "name": "cf_dropdown",
+          "label": "dropdown",
+          "type": "dropdown",
+          "value": "2",
+          "column": "cf_bigint52",
+          "choice_id": "180427094709817949"
+        },
+        {
+          "name": "cf_radio",
+          "label": "radio",
+          "type": "radio",
+          "value": "5",
+          "column": "cf_bigint53",
+          "choice_id": "180427094726594728"
+        }
+      ]
+    },
+    "associations": {
+      "owner": {
+        "id": 2000072129,
+        "name": "Prakash Thiyagarajan",
+        "type": "user",
+        "email": "prakash.thiyagarajan@freshworks.com",
+        "is_active": true,
+        "work_number": null,
+        "mobile_number": null,
+        "time_zone": "Chennai",
+        "created_at": "2019-06-11T14:32:29Z",
+        "updated_at": "2019-06-12T14:35:05Z",
+        "deal_pipeline_id": 45992,
+        "job_title": null,
+        "uuid": "152668707262876185"
+      },
+      "territory": {
+        "id": 2000010947,
+        "name": "ter12",
+        "position": 5
+      },
+      "industry_type": {
+        "id": 2002406100,
+        "name": "Retail &amp; Wholesale",
+        "position": 55
+      },
+      "business_type": {
+        "id": 2000355183,
+        "name": "Customer",
+        "position": 3
+      },
+      "parent_sales_account": null,
+      "updater": {
+        "id": 2000072129,
+        "name": "Prakash Thiyagarajan",
+        "type": "user",
+        "email": "prakash.thiyagarajan@freshworks.com",
+        "is_active": true,
+        "work_number": null,
+        "mobile_number": null,
+        "time_zone": "Chennai",
+        "created_at": "2019-06-11T14:32:29Z",
+        "updated_at": "2019-06-12T14:35:05Z",
+        "deal_pipeline_id": 45992,
+        "job_title": null,
+        "uuid": "152668707262876185"
+      },
+      "team_users": [],
+      "creator": {
+        "id": 2000072129,
+        "name": "Prakash Thiyagarajan",
+        "type": "user",
+        "email": "prakash.thiyagarajan@freshworks.com",
+        "is_active": true,
+        "work_number": null,
+        "mobile_number": null,
+        "time_zone": "Chennai",
+        "created_at": "2019-06-11T14:32:29Z",
+        "updated_at": "2019-06-12T14:35:05Z",
+        "deal_pipeline_id": 45992,
+        "job_title": null,
+        "uuid": "152668707262876185"
+      },
+      "parent_sales_account_owner": null
+    },
+    "changes": {
+      "model_changes": {
+        "updated_at": [
+          "2021-05-06T09:36:13Z",
+          "2021-05-06T14:18:04Z"
+        ],
+        "is_deleted": [
+          false,
+          true
+        ],
+        "status": [
+          1,
+          2
+        ]
+      },
+      "system_changes": {},
+      "misc_changes": {}
+    }
+  }
+}</pre>
+ </div>
+</div><div class="code panel pdl" style="border-width: 1px;">
+ <div class="codeHeader panelHeader pdl hide-border-bottom" style="border-bottom-width: 1px;">
+  <b class="code-title">SALESACCOUNT - destroy</b><span class="collapse-source expand-control" style="display:none;"><span class="expand-control-icon icon">&nbsp;</span><span class="expand-control-text">Expand source</span></span><span class="collapse-spinner-wrapper"></span>
+ </div>
+ <div class="codeContent panelContent pdl hide-toolbar">
+  <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: actionscript3; gutter: false; theme: Emacs; collapse: true" data-theme="Emacs">{
+  "account_id": "47945",
+  "organisation_id": "152668702636558766",
+  "bundle_id": "",
+  "pod": "useast1-pod1",
+  "region": "us-east-1",
+  "payload_type": "sales_account_destroy",
+  "payload_version": "2.0",
+  "payload": {
+    "model": "SalesAccount",
+    "actor": {
+      "id": 2000072129,
+      "name": "Prakash Thiyagarajan",
+      "email": "prakash.thiyagarajan@freshworks.com",
+      "job_title": null,
+      "work_number": null,
+      "mobile_number": null,
+      "language": "en",
+      "time_zone": "Chennai",
+      "is_active": true,
+      "deal_pipeline_id": 45992,
+      "is_forgotten": false,
+      "created_at": "2019-06-11T14:32:29Z",
+      "updated_at": "2019-06-12T14:35:05Z",
+      "uuid": "152668707262876185",
+      "type": "user"
+    },
+    "action": "destroy",
+    "action_epoch": 1620311158.8219469,
+    "uuid": "f9fa042cae7611eba58d024224a54e57",
+    "account_full_domain": "athish.freshsales.io",
+    "event_timestamp": "2021-05-06T14:25:58.821Z",
+    "product_push_timestamp": "2021-05-06T14:26:17.018Z",
+    "mcr_account_id": "",
+    "bundle_id": "",
+    "event_info": {
+      "ip_address": null
+    },
+    "model_properties": {
+      "id": 2010663510,
+      "mcr_id": null,
+      "tag_association_ids": [
+        8316357
+      ]
+    }
+  }
+}</pre>
+ </div>
+</div>

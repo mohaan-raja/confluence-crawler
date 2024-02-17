@@ -1,0 +1,230 @@
+<h1>Title: Phonecall - payload</h1><div class="code panel pdl" style="border-width: 1px;">
+ <div class="codeHeader panelHeader pdl hide-border-bottom" style="border-bottom-width: 1px;">
+  <b class="code-title">Call - create</b><span class="collapse-source expand-control" style="display:none;"><span class="expand-control-icon icon">&nbsp;</span><span class="expand-control-text">Expand source</span></span><span class="collapse-spinner-wrapper"></span>
+ </div>
+ <div class="codeContent panelContent pdl hide-toolbar">
+  <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: actionscript3; gutter: false; theme: Confluence; collapse: true" data-theme="Confluence">{
+  "account_id": "1550050720",
+  "pod": "useast1-pod1",
+  "region": "us-east-1",
+  "payload_type": "phone_call_create",
+  "payload_version": "2.0",
+  "payload": {
+    "model": "Phone::Call",
+    "actor": {
+      "id": 1,
+      "name": "Sales Agent",
+      "type": "user",
+      "email": "ajeet.pandey@freshworks.com",
+      "is_active": true,
+      "work_number": "+919999999999",
+      "mobile_number": null,
+      "time_zone": "Chennai",
+      "created_at": "2019-02-13T15:08:40Z",
+      "updated_at": "2019-02-14T13:39:10Z",
+      "deal_pipeline_id": 1,
+      "job_title": null
+    },
+    "action": "create",
+    "action_epoch": 1550476125.002818,
+    "uuid": "9e23d882335111e99bab6a0003977dd0",
+    "account_full_domain": "AjeetPandey.freshsales-dev.com",
+    "event_timestamp": "2019-02-18T07:48:45Z",
+    "product_push_timestamp": "2019-02-18T07:48:47Z",
+    "event_info": {
+      "ip_address": "127.0.0.1"
+    },
+    "model_properties": {
+      "phone_number": null,
+      "phone_caller_number": null,
+      "phone_caller_number_country": null,
+      "note": "added new call",
+      "id": 21,
+      "user_id": 1,
+      "entity_id": 3,
+      "call_direction": "Outgoing",
+      "call_duration": null,
+      "call_status": "Completed",
+      "call_cost": null,
+      "recording_duration": null,
+      "needs_response": false,
+      "is_manual": true,
+      "is_deleted": false,
+      "root_phone_call_id": 21,
+      "outcome_id": 1,
+      "source": null,
+      "created_at": "2019-02-18T13:18:44Z",
+      "updated_at": "2019-02-18T13:18:44Z"
+    },
+    "associations": {
+      "user": {
+        "id": 1,
+        "name": "Sales Agent",
+        "type": "user",
+        "email": "ajeet.pandey@freshworks.com",
+        "is_active": true,
+        "work_number": "+919999999999",
+        "mobile_number": null,
+        "time_zone": "Chennai",
+        "created_at": "2019-02-13T15:08:40Z",
+        "updated_at": "2019-02-14T13:39:10Z",
+        "deal_pipeline_id": 1,
+        "job_title": null
+      },
+      "root_phone_call": {
+        "id": 21,
+        "user_id": 1,
+        "call_direction": false
+      },
+      "entity": {
+        "id": 3,
+        "_model": "Lead"
+      }
+    }
+  }
+}</pre>
+ </div>
+</div><div class="code panel pdl" style="border-width: 1px;">
+ <div class="codeHeader panelHeader pdl hide-border-bottom" style="border-bottom-width: 1px;">
+  <b class="code-title">Call - update</b><span class="collapse-source expand-control" style="display:none;"><span class="expand-control-icon icon">&nbsp;</span><span class="expand-control-text">Expand source</span></span><span class="collapse-spinner-wrapper"></span>
+ </div>
+ <div class="codeContent panelContent pdl hide-toolbar">
+  <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: actionscript3; gutter: false; theme: Confluence; collapse: true" data-theme="Confluence">{
+  "account_id": "1550050720",
+  "pod": "useast1-pod1",
+  "region": "us-east-1",
+  "payload_type": "phone_call_update",
+  "payload_version": "2.0",
+  "payload": {
+    "model": "Phone::Call",
+    "actor": {
+      "id": 1,
+      "name": "Sales Agent",
+      "type": "user",
+      "email": "ajeet.pandey@freshworks.com",
+      "is_active": true,
+      "work_number": "+919999999999",
+      "mobile_number": null,
+      "time_zone": "Chennai",
+      "created_at": "2019-02-13T15:08:40Z",
+      "updated_at": "2019-02-14T13:39:10Z",
+      "deal_pipeline_id": 1,
+      "job_title": null
+    },
+    "action": "update",
+    "action_epoch": 1550476373.2336352,
+    "uuid": "3218dd4e335211e99bab6a0003977dd0",
+    "account_full_domain": "AjeetPandey.freshsales-dev.com",
+    "event_timestamp": "2019-02-18T07:52:53Z",
+    "product_push_timestamp": "2019-02-18T07:52:54Z",
+    "event_info": {
+      "ip_address": "127.0.0.1"
+    },
+    "model_properties": {
+      "phone_number": "+15743191756",
+      "phone_caller_number": "+18506085472",
+      "phone_caller_number_country": "US",
+      "note": "added note",
+      "id": 16,
+      "user_id": null,
+      "entity_id": 4,
+      "call_direction": "Incoming",
+      "call_duration": 7,
+      "call_status": "No-answer",
+      "call_cost": "0.0125",
+      "recording_duration": null,
+      "needs_response": true,
+      "is_manual": false,
+      "is_deleted": false,
+      "root_phone_call_id": 16,
+      "outcome_id": 2,
+      "source": null,
+      "created_at": "2018-10-25T18:14:39Z",
+      "updated_at": "2019-02-18T13:22:53Z"
+    },
+    "associations": {
+      "user": null,
+      "root_phone_call": {
+        "id": 16,
+        "user_id": null,
+        "call_direction": true
+      },
+      "entity": {
+        "id": 4,
+        "_model": "Lead"
+      }
+    },
+    "changes": {
+      "model_changes": {
+        "note": [
+          null,
+          "added note"
+        ],
+        "outcome_id": [
+          null,
+          2
+        ],
+        "updated_at": [
+          "2019-02-15T14:16:46Z",
+          "2019-02-18T13:22:53Z"
+        ],
+        "entity": [
+          {
+            "id": 1,
+            "_model": "Lead"
+          },
+          {
+            "id": 4,
+            "_model": "Lead"
+          }
+        ]
+      },
+      "system_changes": {},
+      "misc_changes": {}
+    }
+  }
+}</pre>
+ </div>
+</div><div class="code panel pdl" style="border-width: 1px;">
+ <div class="codeHeader panelHeader pdl hide-border-bottom" style="border-bottom-width: 1px;">
+  <b class="code-title">Call - destroy</b><span class="collapse-source expand-control" style="display:none;"><span class="expand-control-icon icon">&nbsp;</span><span class="expand-control-text">Expand source</span></span><span class="collapse-spinner-wrapper"></span>
+ </div>
+ <div class="codeContent panelContent pdl hide-toolbar">
+  <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: actionscript3; gutter: false; theme: Confluence; collapse: true" data-theme="Confluence">{
+  "account_id": "1550050720",
+  "pod": "useast1-pod1",
+  "region": "us-east-1",
+  "payload_type": "phone_call_destroy",
+  "payload_version": "2.0",
+  "payload": {
+    "model": "Phone::Call",
+    "actor": {
+      "id": 1,
+      "name": "Sales Agent",
+      "type": "user",
+      "email": "ajeet.pandey@freshworks.com",
+      "is_active": true,
+      "work_number": "+919999999999",
+      "mobile_number": null,
+      "time_zone": "Chennai",
+      "created_at": "2019-02-13T15:08:40Z",
+      "updated_at": "2019-02-14T13:39:10Z",
+      "deal_pipeline_id": 1,
+      "job_title": null
+    },
+    "action": "destroy",
+    "action_epoch": 1550476456.99011,
+    "uuid": "6405144e335211e99bab6a0003977dd0",
+    "account_full_domain": "AjeetPandey.freshsales-dev.com",
+    "event_timestamp": "2019-02-18T07:54:16Z",
+    "product_push_timestamp": "2019-02-18T07:54:17Z",
+    "event_info": {
+      "ip_address": "127.0.0.1"
+    },
+    "model_properties": {
+      "id": 21
+    }
+  }
+}</pre>
+ </div>
+</div>

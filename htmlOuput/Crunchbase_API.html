@@ -1,0 +1,42 @@
+<h1>Title: Crunchbase API</h1><ul><li><a href="https://about.crunchbase.com/products/crunchbase-enterprise/crunchbase-for-salesforce/" style="color: rgb(0,0,0);" class="external-link" rel="nofollow">Crunchbase for Salesforce</a><span style="color: rgb(0,0,0);"> : Enriches specific info about a company</span></li></ul><h2 id="CrunchbaseAPI-APIOverview">API Overview</h2><ul><li><span style="color: rgb(0,0,0);">Access to the Full API Requires an </span><span style="color: rgb(17,85,204);text-decoration: underline;"><a href="https://support.crunchbase.com/hc/en-us/articles/115010466447-How-do-I-get-API-access-" class="external-link" rel="nofollow">Enterprise or Applications License</a></span></li><li><span style="color: rgb(17,85,204);letter-spacing: 0.0px;"><span style="color: rgb(0,0,0);">API Docs : </span></span><span style="color: rgb(17,85,204);text-decoration: underline;letter-spacing: 0.0px;"><a href="https://data.crunchbase.com/docs/using-the-api" class="external-link" rel="nofollow">https://data.crunchbase.com/docs/using-the-api</a></span></li><li><span style="color: rgb(0,0,0);">Accessing Crunchabse API and Open Data Map Rapid API (free plan requires credit card details too) : </span><span style="color: rgb(17,85,204);text-decoration: underline;"><a href="https://rapidapi.com/crunchbase/api/crunchbase/pricing" class="external-link" rel="nofollow">https://rapidapi.com/crunchbase/api/crunchbase/pricing</a></span></li><li><a href="https://drive.google.com/open?id=0BxbQKFAbx4WgV2x4RzVTT2pJUVl2a3FDTndhZDVJQ09oWjRj" class="external-link" rel="nofollow">Crunchbase for Applications</a> Deck </li><li>About the data<ul><li>Obtained though multiple sources. (Crawling, Crowdsourced, etc.)</li><li>Doesn't provide info about salesperson (from email ID). Only company properties. </li><li>Some companies use a FullContact/Clearbit (besides Crunchbase) to enrich person info</li><li>Enriches Org category well (special mention)</li><li>Alexa ranks not available but Crunchbase Rank uses multiple signals.</li></ul></li><li>Coverage<ul><li>Has data for most SMBs and major startups (covers 25,000 orgs in India)</li><li>Private, innovative, growing companies</li><li>Data is updated atleast once a week.</li></ul></li></ul><h3 id="CrunchbaseAPI-Endpointsofinterest"><a href="https://data.crunchbase.com/v3.1/reference" class="external-link" rel="nofollow">Endpoints</a> of interest</h3><ul><li><p class="auto-cursor-target">Searching for organisations by name or domain : <a href="https://data.crunchbase.com/v3.1/reference#organizations" class="external-link" rel="nofollow">/organizations</a></p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: py; gutter: false; theme: Confluence" data-theme="Confluence">import requests
+url = &quot;https://api.crunchbase.com/v3.1/organizations&quot;
+CB_TOKEN = &quot;TOKEN&quot;
+querystring = {&quot;domain_name&quot;:&quot;freshworks.com&quot;,&quot;user_key&quot;:CB_TOKEN}
+response = requests.get(url, params=querystring)
+perma_link_id = response.json()[&#39;data&#39;][&#39;items&#39;][0][&#39;properties&#39;][&#39;permalink&#39;] </pre>
+</div></div></li><li><p class="auto-cursor-target">Getting properties of an organisation :<br/>Organisation information retrieved API is same as <a href="https://www.crunchbase.com/organization/freshworks" class="external-link" rel="nofollow">Crunchbase page</a> without the 3rd Party Data (Owler, BuiltWith, etc.) </p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: py; gutter: false; theme: Confluence" data-theme="Confluence">import requests
+
+perma_link_id = &quot;Freshworks&quot;
+url = &quot;https://api.crunchbase.com/v3.1/organizations/&quot;+perma_link_id
+querystring = {&quot;user_key&quot;:CB_TOKEN}
+response = requests.get(url,params=querystring)
+
+data = response.json()</pre>
+</div></div></li></ul><h2 id="CrunchbaseAPI-OtherNotes">Other Notes </h2><ul style="list-style-type: square;"><li>data['properties'][u'also_known_as'] - Company name aliases (Could help with dedupe, similar to domain aliases provided by clearbit)</li></ul><h2 id="CrunchbaseAPI-Pricing">Pricing</h2><ul><li><span style="color: rgb(34,34,34);"><span style="color: rgb(34,34,34);">Flat fee for a </span>12-month or multi-year option for licensing their data. The flat fee is dependent on a variety of factors</span><strong><u><br/></u></strong></li><li><strong><u>Internal Use only:</u></strong><ul><li>Falls under Enterprise license. </li><li>Allows us to use the data internally (only Freshworks employees are permitted to use and see the data). </li><li>Baseline package is $12,000 USD for 12-months, and gives access for 5 developers and up to 25 viewers. </li><li>Scales up from there depending on the number of view-only users. </li><li>They also offer a truly unlimited package for unlimited users in the six figure range.</li></ul></li><li><strong><u>Commercial Use</u></strong> (exposing to customers)<ul><li>Falls under Applications license. </li><li>Flat fee is dependent on the data fields we want to expose to customers. </li><li>All in package is usually $80,000-$90,000 USD, and there are some restrictions on this (no exporting, and we need to cite Crunchbase as a source of the data).</li></ul></li></ul><h2 id="CrunchbaseAPI-BenchmarkTableInfo">Benchmark Table Info</h2><pre>RangeIndex: 20284 entries, 0 to 20283
+Data columns (total 23 columns):
+domain          20284 non-null object
+com_arr         0 non-null object
+com_bio         3740 non-null object
+com_categ       4638 non-null object
+com_empnum      4638 non-null object
+com_fb_hand     3632 non-null object
+com_fb_like     0 non-null object
+com_fund_stg    4638 non-null object
+com_funding     4638 non-null object
+com_li_hand     3530 non-null object
+com_loc         3938 non-null object
+com_name        4638 non-null object
+com_pic         4383 non-null object
+com_rank        4638 non-null object
+com_since       3936 non-null object
+com_tags        4638 non-null object
+com_tech        0 non-null object
+com_tw_fols     0 non-null object
+com_tw_hand     3777 non-null object
+com_tw_locn     0 non-null object
+com_type        0 non-null object
+com_value       107 non-null object
+per_li_hand     0 non-null object
+</pre>

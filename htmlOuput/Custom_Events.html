@@ -1,0 +1,103 @@
+<h1>Title: Custom Events</h1><div class="code panel pdl" style="border-width: 1px;">
+ <div class="codeHeader panelHeader pdl hide-border-bottom" style="border-bottom-width: 1px;">
+  <b class="code-title">Page view - Create / Update</b><span class="collapse-source expand-control" style="display:none;"><span class="expand-control-icon icon">&nbsp;</span><span class="expand-control-text">Expand source</span></span><span class="collapse-spinner-wrapper"></span>
+ </div>
+ <div class="codeContent panelContent pdl hide-toolbar">
+  <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: actionscript3; gutter: false; theme: Confluence; collapse: true" data-theme="Confluence">{
+  "account_id": "1563437805",
+  "pod": "useast1-pod1",
+  "region": "us-east-1",
+  "payload_type": "page_view_create / page_view_update",
+  "payload_version": "2.0",
+  "payload": {
+    "model": "PageView",
+    "actor": {
+      "id": 0,
+      "name": "System",
+      "type": "system"
+    },
+    "action": "create",
+    "action_epoch": 1569333913.5857909,
+    "uuid": "54099280ded411e9bc86645aede8d797",
+    "account_full_domain": "freshworks.freshsales.io",
+    "event_timestamp": "2019-09-24T14:05:13.585Z",
+    "product_push_timestamp": "2019-09-24T14:05:13.773Z",
+    "event_info": {
+      "ip_address": "115.112.69.51"
+    },
+    "model_properties": {
+      "id": 1,
+      "event_at":"2019-09-24T14:05:13Z",
+      "event_source": "segment" #only for segment events
+  &nbsp; &nbsp; "url": "freshworks.com/products",
+      "created_at": "2019-09-24T14:05:13Z",
+      "updated_at": "2019-09-24T14:05:13Z",
+      "targetable_type": "Contact",
+      "targetable_id": 12345
+    },
+    "associations": {
+      "targetable": {
+        "id": 12345,
+        "_model": "Contact",
+        "mcr_id": 32435364
+      }
+    }
+  }
+}</pre>
+ </div>
+</div><div class="code panel pdl" style="border-width: 1px;">
+ <div class="codeHeader panelHeader pdl hide-border-bottom" style="border-bottom-width: 1px;">
+  <b class="code-title">EventLog - Create / Update</b><span class="collapse-source expand-control" style="display:none;"><span class="expand-control-icon icon">&nbsp;</span><span class="expand-control-text">Expand source</span></span><span class="collapse-spinner-wrapper"></span>
+ </div>
+ <div class="codeContent panelContent pdl hide-toolbar">
+  <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: actionscript3; gutter: false; theme: Confluence; collapse: true" data-theme="Confluence">{
+  "account_id": "1563437805",
+  "pod": "useast1-pod1",
+  "region": "us-east-1",
+  "payload_type": "event_log_create / event_log_update",
+  "payload_version": "2.0",
+  "payload": {
+    "model": "EventLog",
+    "actor": {
+      "id": 0,
+      "name": "System",
+      "type": "system"
+    },
+    "action": "create",
+    "action_epoch": 1569333913.5857909,
+    "uuid": "54099280ded411e9bc86645aede8d797",
+    "account_full_domain": "freshworks.freshsales.io",
+    "event_timestamp": "2019-09-24T14:05:13.585Z",
+    "product_push_timestamp": "2019-09-24T14:05:13.773Z",
+    "event_info": {
+      "ip_address": "115.112.69.51"
+    },
+    "model_properties": {
+      "id": 1,
+      "event_id": 1234,
+ &nbsp; &nbsp; &nbsp;"event_at":"2019-09-24T14:05:13Z",
+      "event_source": "segment" #only for segment events 
+      "properties" : {
+        "video title": "Quick guide for inbound sales",
+        "source page": "freshworks.com/products/freshsales/how-to"
+      },
+      "created_at": "2019-09-24T14:05:13Z",
+      "updated_at": "2019-09-24T14:05:13Z",
+      "targetable_type": "Contact",
+      "targetable_id": 12345
+    },
+    "associations": {
+      "targetable": {
+        "id": 12345,
+        "_model": "Contact",
+        "mcr_id": 32435364
+      },
+      "event": {
+        "id" : 1234,
+        "name": "Watched a video"
+      }
+    }
+  }
+}</pre>
+ </div>
+</div>

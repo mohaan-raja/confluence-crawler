@@ -1,0 +1,297 @@
+<h1>Title: DealPipeline - payload</h1><div class="code panel pdl" style="border-width: 1px;">
+ <div class="codeHeader panelHeader pdl hide-border-bottom" style="border-bottom-width: 1px;">
+  <b class="code-title">DealPipeline - create</b><span class="collapse-source expand-control" style="display:none;"><span class="expand-control-icon icon">&nbsp;</span><span class="expand-control-text">Expand source</span></span><span class="collapse-spinner-wrapper"></span>
+ </div>
+ <div class="codeContent panelContent pdl hide-toolbar">
+  <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: actionscript3; gutter: false; theme: Confluence; collapse: true" data-theme="Confluence">{
+  "account_id": "1581574984",
+  "organisation_id": "",
+  "pod": "useast1-pod1",
+  "region": "us-east-1",
+  "payload_type": "deal_pipeline_create",
+  "payload_version": "2.0",
+  "payload": {
+    "model": "DealPipeline",
+    "actor": {
+      "id": 11,
+      "name": "Pr***** ********** *****an",
+      "email": "prakash.thiyagarajan@freshworks.com",
+      "job_title": "**********",
+      "work_number": "**********",
+      "mobile_number": "**********",
+      "language": "en",
+      "time_zone": "Kolkata",
+      "is_active": true,
+      "deal_pipeline_id": 1,
+      "is_forgotten": false,
+      "created_at": "2020-03-17T09:27:38Z",
+      "updated_at": "2020-05-14T08:34:07Z",
+      "uuid": "f5f6ed8c-33f6-e1ff-9240-5ce49f0b9f94",
+      "type": "user"
+    },
+    "action": "create",
+    "action_epoch": 1591685212.397994,
+    "uuid": "004c0df2aa1d11eab8000242ac120007",
+    "account_full_domain": "freports.reports.freshmarketeer.com",
+    "event_timestamp": "2020-06-09T06:46:52.397Z",
+    "product_push_timestamp": "2020-06-09T06:46:58.111Z",
+    "mcr_account_id": "",
+    "bundle_id": "",
+    "event_info": {
+      "ip_address": "115.112.69.51"
+    },
+    "model_properties": {
+      "id": 6,
+      "name": "US sales",
+      "position": 4,
+      "is_deleted": false,
+      "is_default": false,
+      "created_at": "2020-06-09T06:46:52Z",
+      "updated_at": "2020-06-09T06:46:52Z",
+      "rotting_days": 30
+    },
+    "associations": {
+      "deal_stages": [
+        {
+          "id": 31,
+          "name": "New",
+          "position": 1,
+          "forecast_type": "Open"
+        },
+        {
+          "id": 32,
+          "name": "Probably it will won",
+          "position": 2,
+          "forecast_type": "Open"
+        },
+        {
+          "id": 33,
+          "name": "Won",
+          "position": 3,
+          "forecast_type": "Closed Won"
+        },
+        {
+          "id": 34,
+          "name": "Lost",
+          "position": 4,
+          "forecast_type": "Closed Lost"
+        }
+      ]
+    }
+  }
+}</pre>
+ </div>
+</div><div class="code panel pdl" style="border-width: 1px;">
+ <div class="codeHeader panelHeader pdl hide-border-bottom" style="border-bottom-width: 1px;">
+  <b class="code-title">DealPipeline - update</b><span class="collapse-source expand-control" style="display:none;"><span class="expand-control-icon icon">&nbsp;</span><span class="expand-control-text">Expand source</span></span><span class="collapse-spinner-wrapper"></span>
+ </div>
+ <div class="codeContent panelContent pdl hide-toolbar">
+  <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: actionscript3; gutter: false; theme: Confluence; collapse: true" data-theme="Confluence">{
+  "account_id": "1581574984",
+  "organisation_id": "",
+  "pod": "useast1-pod1",
+  "region": "us-east-1",
+  "payload_type": "deal_pipeline_update",
+  "payload_version": "2.0",
+  "payload": {
+    "model": "DealPipeline",
+    "actor": {
+      "id": 11,
+      "name": "Pr***** ********** *****an",
+      "email": "prakash.thiyagarajan@freshworks.com",
+      "job_title": "**********",
+      "work_number": "**********",
+      "mobile_number": "**********",
+      "language": "en",
+      "time_zone": "Kolkata",
+      "is_active": true,
+      "deal_pipeline_id": 1,
+      "is_forgotten": false,
+      "created_at": "2020-03-17T09:27:38Z",
+      "updated_at": "2020-05-14T08:34:07Z",
+      "uuid": "f5f6ed8c-33f6-e1ff-9240-5ce49f0b9f94",
+      "type": "user"
+    },
+    "action": "update",
+    "action_epoch": 1591686000.1680927,
+    "uuid": "d5d839d6aa1e11eab8000242ac120007",
+    "account_full_domain": "freports.reports.freshmarketeer.com",
+    "event_timestamp": "2020-06-09T07:00:00.168Z",
+    "product_push_timestamp": "2020-06-09T07:00:14.869Z",
+    "mcr_account_id": "",
+    "bundle_id": "",
+    "event_info": {
+      "ip_address": "115.112.69.51"
+    },
+    "model_properties": {
+      "id": 6,
+      "name": "US sales team",
+      "position": 4,
+      "is_deleted": false,
+      "is_default": true,
+      "created_at": "2020-06-09T06:46:52Z",
+      "updated_at": "2020-06-09T06:59:59Z",
+      "rotting_days": 45
+    },
+    "associations": {
+      "deal_stages": [
+        {
+          "id": 31,
+          "name": "New",
+          "position": 1,
+          "forecast_type": "Open"
+        },
+        {
+          "id": 32,
+          "name": "Demo",
+          "position": 2,
+          "forecast_type": "Open"
+        },
+        {
+          "id": 33,
+          "name": "Won",
+          "position": 3,
+          "forecast_type": "Closed Won"
+        },
+        {
+          "id": 34,
+          "name": "Lost",
+          "position": 4,
+          "forecast_type": "Closed Lost"
+        }
+      ]
+    },
+    "changes": {
+      "model_changes": {
+        "name": [
+          "US sales",
+          "US sales team"
+        ],
+        "is_default": [
+          false,
+          true
+        ],
+        "updated_at": [
+          "2020-06-09T06:46:52Z",
+          "2020-06-09T06:59:59Z"
+        ],
+        "rotting_days": [
+          30,
+          45
+        ]
+      },
+      "system_changes": {},
+      "misc_changes": {}
+    }
+  }
+}</pre>
+ </div>
+</div><div class="code panel pdl" style="border-width: 1px;">
+ <div class="codeHeader panelHeader pdl hide-border-bottom" style="border-bottom-width: 1px;">
+  <b class="code-title">DealPipeline - delete</b><span class="collapse-source expand-control" style="display:none;"><span class="expand-control-icon icon">&nbsp;</span><span class="expand-control-text">Expand source</span></span><span class="collapse-spinner-wrapper"></span>
+ </div>
+ <div class="codeContent panelContent pdl hide-toolbar">
+  <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: actionscript3; gutter: false; theme: Confluence; collapse: true" data-theme="Confluence">{
+  "account_id": "1581574984",
+  "organisation_id": "",
+  "pod": "useast1-pod1",
+  "region": "us-east-1",
+  "payload_type": "deal_pipeline_update",
+  "payload_version": "2.0",
+  "payload": {
+    "model": "DealPipeline",
+    "actor": {
+      "id": 11,
+      "name": "Pr***** ********** *****an",
+      "email": "prakash.thiyagarajan@freshworks.com",
+      "job_title": "**********",
+      "work_number": "**********",
+      "mobile_number": "**********",
+      "language": "en",
+      "time_zone": "Kolkata",
+      "is_active": true,
+      "deal_pipeline_id": 1,
+      "is_forgotten": false,
+      "created_at": "2020-03-17T09:27:38Z",
+      "updated_at": "2020-05-14T08:34:07Z",
+      "uuid": "f5f6ed8c-33f6-e1ff-9240-5ce49f0b9f94",
+      "type": "user"
+    },
+    "action": "update",
+    "action_epoch": 1591686396.7559056,
+    "uuid": "c23abb82aa1f11eab8000242ac120007",
+    "account_full_domain": "freports.reports.freshmarketeer.com",
+    "event_timestamp": "2020-06-09T07:06:36.755Z",
+    "product_push_timestamp": "2020-06-09T07:06:52.582Z",
+    "mcr_account_id": "",
+    "bundle_id": "",
+    "event_info": {
+      "ip_address": "115.112.69.51"
+    },
+    "model_properties": {
+      "id": 6,
+      "name": "US sales team",
+      "position": 4,
+      "is_deleted": true,
+      "is_default": false,
+      "created_at": "2020-06-09T06:46:52Z",
+      "updated_at": "2020-06-09T07:06:34Z",
+      "rotting_days": 45
+    },
+    "associations": {
+      "deal_stages": []
+    },
+    "changes": {
+      "model_changes": {
+        "is_deleted": [
+          false,
+          true
+        ],
+        "updated_at": [
+          "2020-06-09T06:59:59Z",
+          "2020-06-09T07:06:34Z"
+        ]
+      },
+      "system_changes": {},
+      "misc_changes": {}
+    }
+  }
+}</pre>
+ </div>
+</div><div class="code panel pdl" style="border-width: 1px;">
+ <div class="codeHeader panelHeader pdl hide-border-bottom" style="border-bottom-width: 1px;">
+  <b class="code-title">DealPipeline - destroy</b><span class="collapse-source expand-control" style="display:none;"><span class="expand-control-icon icon">&nbsp;</span><span class="expand-control-text">Expand source</span></span><span class="collapse-spinner-wrapper"></span>
+ </div>
+ <div class="codeContent panelContent pdl hide-toolbar">
+  <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: actionscript3; gutter: false; theme: Confluence; collapse: true" data-theme="Confluence">{
+  "account_id": "1581574984",
+  "organisation_id": "",
+  "pod": "useast1-pod1",
+  "region": "us-east-1",
+  "payload_type": "deal_pipeline_destroy",
+  "payload_version": "2.0",
+  "payload": {
+    "model": "DealPipeline",
+    "actor": {
+      "id": 0,
+      "name": "System",
+      "type": "system"
+    },
+    "action": "destroy",
+    "action_epoch": 1591687018.0296822,
+    "uuid": "348995ccaa2111eab1df0242ac120007",
+    "account_full_domain": "freports.reports.freshmarketeer.com",
+    "event_timestamp": "2020-06-09T07:16:58.029Z",
+    "product_push_timestamp": "2020-06-09T07:17:07.700Z",
+    "mcr_account_id": "",
+    "bundle_id": "",
+    "event_info": {
+      "ip_address": null
+    },
+    "model_properties": {
+      "id": 5
+    }
+  }
+}</pre>
+ </div>
+</div>

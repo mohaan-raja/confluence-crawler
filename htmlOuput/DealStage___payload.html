@@ -1,0 +1,228 @@
+<h1>Title: DealStage - payload</h1><div class="code panel pdl" style="border-width: 1px;">
+ <div class="codeHeader panelHeader pdl hide-border-bottom" style="border-bottom-width: 1px;">
+  <b class="code-title">DealStage - create</b><span class="collapse-source expand-control" style="display:none;"><span class="expand-control-icon icon">&nbsp;</span><span class="expand-control-text">Expand source</span></span><span class="collapse-spinner-wrapper"></span>
+ </div>
+ <div class="codeContent panelContent pdl hide-toolbar">
+  <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: actionscript3; gutter: false; theme: Confluence; collapse: true" data-theme="Confluence">{
+  "account_id": "1581574984",
+  "organisation_id": "",
+  "pod": "useast1-pod1",
+  "region": "us-east-1",
+  "payload_type": "deal_stage_create",
+  "payload_version": "2.0",
+  "payload": {
+    "model": "DealStage",
+    "actor": {
+      "id": 11,
+      "name": "Pr***** ********** *****an",
+      "email": "prakash.thiyagarajan@freshworks.com",
+      "job_title": "**********",
+      "work_number": "**********",
+      "mobile_number": "**********",
+      "language": "en",
+      "time_zone": "Kolkata",
+      "is_active": true,
+      "deal_pipeline_id": 1,
+      "is_forgotten": false,
+      "created_at": "2020-03-17T09:27:38Z",
+      "updated_at": "2020-05-14T08:34:07Z",
+      "uuid": "f5f6ed8c-33f6-e1ff-9240-5ce49f0b9f94",
+      "type": "user"
+    },
+    "action": "create",
+    "action_epoch": 1591685212.4024975,
+    "uuid": "004cbe78aa1d11eab8000242ac120007",
+    "account_full_domain": "freports.reports.freshmarketeer.com",
+    "event_timestamp": "2020-06-09T06:46:52.402Z",
+    "product_push_timestamp": "2020-06-09T06:46:52.512Z",
+    "mcr_account_id": "",
+    "bundle_id": "",
+    "event_info": {
+      "ip_address": "115.112.69.51"
+    },
+    "model_properties": {
+      "id": 32,
+      "name": "Probably it will won",
+      "forecast_type": "Open",
+      "position": 2,
+      "is_deleted": false,
+      "choice_type": "Custom",
+      "probability": 80,
+      "deal_pipeline_id": 6,
+      "created_at": "2020-06-09T06:46:52Z",
+      "updated_at": "2020-06-09T06:46:52Z"
+    },
+    "associations": {
+      "deal_pipeline": {
+        "id": 6,
+        "name": "US sales",
+        "position": 4,
+        "is_default": false
+      }
+    }
+  }
+}</pre>
+ </div>
+</div><div class="code panel pdl" style="border-width: 1px;">
+ <div class="codeHeader panelHeader pdl hide-border-bottom" style="border-bottom-width: 1px;">
+  <b class="code-title">DealStage - update</b><span class="collapse-source expand-control" style="display:none;"><span class="expand-control-icon icon">&nbsp;</span><span class="expand-control-text">Expand source</span></span><span class="collapse-spinner-wrapper"></span>
+ </div>
+ <div class="codeContent panelContent pdl hide-toolbar">
+  <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: actionscript3; gutter: false; theme: Confluence; collapse: true" data-theme="Confluence">{
+  "account_id": "1581574984",
+  "organisation_id": "",
+  "pod": "useast1-pod1",
+  "region": "us-east-1",
+  "payload_type": "deal_stage_update",
+  "payload_version": "2.0",
+  "payload": {
+    "model": "DealStage",
+    "actor": {
+      "id": 11,
+      "name": "Pr***** ********** *****an",
+      "email": "prakash.thiyagarajan@freshworks.com",
+      "job_title": "**********",
+      "work_number": "**********",
+      "mobile_number": "**********",
+      "language": "en",
+      "time_zone": "Kolkata",
+      "is_active": true,
+      "deal_pipeline_id": 1,
+      "is_forgotten": false,
+      "created_at": "2020-03-17T09:27:38Z",
+      "updated_at": "2020-05-14T08:34:07Z",
+      "uuid": "f5f6ed8c-33f6-e1ff-9240-5ce49f0b9f94",
+      "type": "user"
+    },
+    "action": "update",
+    "action_epoch": 1591686000.170628,
+    "uuid": "d5d89ea8aa1e11eab8000242ac120007",
+    "account_full_domain": "freports.reports.freshmarketeer.com",
+    "event_timestamp": "2020-06-09T07:00:00.170Z",
+    "product_push_timestamp": "2020-06-09T07:00:00.218Z",
+    "mcr_account_id": "",
+    "bundle_id": "",
+    "event_info": {
+      "ip_address": "115.112.69.51"
+    },
+    "model_properties": {
+      "id": 32,
+      "name": "Demo",
+      "forecast_type": "Open",
+      "position": 2,
+      "is_deleted": false,
+      "choice_type": "Custom",
+      "probability": 85,
+      "deal_pipeline_id": 6,
+      "created_at": "2020-06-09T06:46:52Z",
+      "updated_at": "2020-06-09T06:59:59Z"
+    },
+    "associations": {
+      "deal_pipeline": {
+        "id": 6,
+        "name": "US sales team",
+        "position": 4,
+        "is_default": true
+      }
+    },
+    "changes": {
+      "model_changes": {
+        "name": [
+          "Probably it will won",
+          "Demo"
+        ],
+        "probability": [
+          80,
+          85
+        ],
+        "updated_at": [
+          "2020-06-09T06:46:52Z",
+          "2020-06-09T06:59:59Z"
+        ]
+      },
+      "system_changes": {},
+      "misc_changes": {}
+    }
+  }
+}</pre>
+ </div>
+</div><div class="code panel pdl" style="border-width: 1px;">
+ <div class="codeHeader panelHeader pdl hide-border-bottom" style="border-bottom-width: 1px;">
+  <b class="code-title">DealStage - delete</b><span class="collapse-source expand-control" style="display:none;"><span class="expand-control-icon icon">&nbsp;</span><span class="expand-control-text">Expand source</span></span><span class="collapse-spinner-wrapper"></span>
+ </div>
+ <div class="codeContent panelContent pdl hide-toolbar">
+  <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: actionscript3; gutter: false; theme: Confluence; collapse: true" data-theme="Confluence">{
+  "account_id": "1581574984",
+  "organisation_id": "",
+  "pod": "useast1-pod1",
+  "region": "us-east-1",
+  "payload_type": "deal_stage_update",
+  "payload_version": "2.0",
+  "payload": {
+    "model": "DealStage",
+    "actor": {
+      "id": 11,
+      "name": "Pr***** ********** *****an",
+      "email": "prakash.thiyagarajan@freshworks.com",
+      "job_title": "**********",
+      "work_number": "**********",
+      "mobile_number": "**********",
+      "language": "en",
+      "time_zone": "Kolkata",
+      "is_active": true,
+      "deal_pipeline_id": 1,
+      "is_forgotten": false,
+      "created_at": "2020-03-17T09:27:38Z",
+      "updated_at": "2020-05-14T08:34:07Z",
+      "uuid": "f5f6ed8c-33f6-e1ff-9240-5ce49f0b9f94",
+      "type": "user"
+    },
+    "action": "update",
+    "action_epoch": 1591686254.2429247,
+    "uuid": "6d48f8f0aa1f11eab8000242ac120007",
+    "account_full_domain": "freports.reports.freshmarketeer.com",
+    "event_timestamp": "2020-06-09T07:04:14.242Z",
+    "product_push_timestamp": "2020-06-09T07:04:14.302Z",
+    "mcr_account_id": "",
+    "bundle_id": "",
+    "event_info": {
+      "ip_address": "115.112.69.51"
+    },
+    "model_properties": {
+      "id": 32,
+      "name": "Demo",
+      "forecast_type": "Open",
+      "position": 2,
+      "is_deleted": true,
+      "choice_type": "Custom",
+      "probability": 85,
+      "deal_pipeline_id": 6,
+      "created_at": "2020-06-09T06:46:52Z",
+      "updated_at": "2020-06-09T07:04:14Z"
+    },
+    "associations": {
+      "deal_pipeline": {
+        "id": 6,
+        "name": "US sales team",
+        "position": 4,
+        "is_default": true
+      }
+    },
+    "changes": {
+      "model_changes": {
+        "is_deleted": [
+          false,
+          true
+        ],
+        "updated_at": [
+          "2020-06-09T06:59:59Z",
+          "2020-06-09T07:04:14Z"
+        ]
+      },
+      "system_changes": {},
+      "misc_changes": {}
+    }
+  }
+}</pre>
+ </div>
+</div>

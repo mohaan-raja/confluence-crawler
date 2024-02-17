@@ -1,0 +1,357 @@
+<h1>Title: EmailConversation - payload</h1><div class="confluence-information-macro confluence-information-macro-information"><span class="aui-icon aui-icon-small aui-iconfont-info confluence-information-macro-icon"></span><div class="confluence-information-macro-body"><p>Since the frequency of these events are very rare, Initially, we onboard the events without truncating the payload. However, we will introduce new alerts to monitor the frequency of payloads that exceed the limit.<br/>In scenarios where the customer expects the event or is based on specific use cases, we can introduce truncation on the payload of these events.<br/><br/>It was agreed upon that if the payload size exceeds 255KB, it should be dropped.<br/><br/></p></div></div><div class="code panel pdl" style="border-width: 1px;">
+ <div class="codeHeader panelHeader pdl hide-border-bottom" style="border-bottom-width: 1px;">
+  <b class="code-title">EMAIL CONVERSATION - create</b><span class="collapse-source expand-control" style="display:none;"><span class="expand-control-icon icon">&nbsp;</span><span class="expand-control-text">Expand source</span></span><span class="collapse-spinner-wrapper"></span>
+ </div>
+ <div class="codeContent panelContent pdl hide-toolbar">
+  <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: actionscript3; gutter: false; theme: Confluence; collapse: true" data-theme="Confluence">{
+  "account_id": "1581574984",
+  "organisation_id": "",
+  "pod": "useast1-pod1",
+  "region": "us-east-1",
+  "payload_type": "email_conversation_create",
+  "payload_version": "2.0",
+  "payload": {
+    "model": "EmailConversation",
+    "actor": {
+      "id": 11,
+      "name": "Pr***** ********** *****an",
+      "email": "prakash.thiyagarajan@freshworks.com",
+      "job_title": "**********",
+      "work_number": "**********",
+      "mobile_number": "**********",
+      "language": "en",
+      "time_zone": "Kolkata",
+      "is_active": true,
+      "deal_pipeline_id": 1,
+      "is_forgotten": false,
+      "created_at": "2020-03-17T09:27:38Z",
+      "updated_at": "2020-05-14T08:34:07Z",
+      "uuid": "f5f6ed8c-33f6-e1ff-9240-5ce49f0b9f94",
+      "type": "user"
+    },
+    "action": "create",
+    "action_epoch": 1592476741.6606274,
+    "uuid": "ec809baab14f11eab5920242ac120007",
+    "account_full_domain": "freports.reports.freshmarketeer.com",
+    "event_timestamp": "2020-06-18T10:39:01.660Z",
+    "product_push_timestamp": "2020-06-18T10:39:12.176Z",
+    "mcr_account_id": "",
+    "bundle_id": "",
+    "event_info": {
+      "ip_address": null
+    },
+    "model_properties": {
+      "id": 54,
+      "email_id": 41,
+      "creator_id": 11,
+      "template_id": null,
+      "direction": "Outgoing",
+      "status": "Sent",
+      "subject": "sample subject",
+      "needs_tracking": false,
+      "scheduled_at": null,
+      "date_header": "2020-06-18T10:39:00Z",
+      "message_id": "&lt;5e44eb48.36@freports.reports.freshmarketeer.com&gt;",
+      "ref_conversation_id": null,
+      "email_status": "Sent",
+      "unsubscribe": false,
+      "created_at": "2020-06-18T10:37:38Z",
+      "updated_at": "2020-06-18T10:39:01Z",
+      "in_reply_to": "&lt;SalesSequence.3000027847.baad.728d31b5@sample.freshsales.io&gt;",
+      "email_association": true,
+ &nbsp; &nbsp; &nbsp; "email_recipients": [
+        {
+          "id": 138,
+          "email_id": 41,
+          "conversation_id": 54,
+          "targetable_id": 11,
+          "targetable_type": "FdMultitenant::User",
+          "field": "from",
+          "email_address": "prakash.thiyagarajan@freshworks.com",
+          "email_name": "Pr***** ********** *****an",
+          "bounced": false,
+          "opened": false,
+          "clicked": false,
+          "bounced_time": null,
+          "opened_time": null,
+          "clicked_time": null,
+          "created_at": "2020-06-18T10:37:38Z",
+          "updated_at": "2020-06-18T10:37:38Z",
+          "unsubscribed": false,
+          "unsubscribed_time": null
+        },
+        {
+          "id": 139,
+          "email_id": 41,
+          "conversation_id": 54,
+          "targetable_id": 11,
+          "targetable_type": "FdMultitenant::User",
+          "field": "reply_to",
+          "email_address": "pran+b@freports.reports.freshmarketeer.com",
+          "email_name": "Pr***** ********** *****an",
+          "bounced": false,
+          "opened": false,
+          "clicked": false,
+          "bounced_time": null,
+          "opened_time": null,
+          "clicked_time": null,
+          "created_at": "2020-06-18T10:37:38Z",
+          "updated_at": "2020-06-18T10:37:38Z",
+          "unsubscribed": false,
+          "unsubscribed_time": null
+        }
+      ],
+      "source_additional_info": {}
+    },
+    "associations": {
+      "creator": {
+        "id": 11,
+        "name": "Pr***** ********** *****an",
+        "type": "user",
+        "email": "prakash.thiyagarajan@freshworks.com",
+        "is_active": true,
+        "work_number": "**********",
+        "mobile_number": "**********",
+        "time_zone": "Kolkata",
+        "created_at": "2020-03-17T09:27:38Z",
+        "updated_at": "2020-05-14T08:34:07Z",
+        "deal_pipeline_id": 1,
+        "job_title": "**********",
+        "uuid": "f5f6ed8c-33f6-e1ff-9240-5ce49f0b9f94"
+      }
+    }
+  }
+}</pre>
+ </div>
+</div><div class="code panel pdl" style="border-width: 1px;">
+ <div class="codeHeader panelHeader pdl hide-border-bottom" style="border-bottom-width: 1px;">
+  <b class="code-title">EMAIL CONVERSATION - update</b><span class="collapse-source expand-control" style="display:none;"><span class="expand-control-icon icon">&nbsp;</span><span class="expand-control-text">Expand source</span></span><span class="collapse-spinner-wrapper"></span>
+ </div>
+ <div class="codeContent panelContent pdl hide-toolbar">
+  <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: actionscript3; gutter: false; theme: Confluence; collapse: true" data-theme="Confluence">{
+  "account_id": "1581574984",
+  "organisation_id": "",
+  "pod": "useast1-pod1",
+  "region": "us-east-1",
+  "payload_type": "email_conversation_update",
+  "payload_version": "2.0",
+  "payload": {
+    "model": "EmailConversation",
+    "actor": {
+      "id": 0,
+      "name": "System",
+      "type": "system"
+    },
+    "action": "update",
+    "action_epoch": 1592477235.7460148,
+    "uuid": "12fa723cb15111eabc4a0242ac120007",
+    "account_full_domain": "freports.reports.freshmarketeer.com",
+    "event_timestamp": "2020-06-18T10:47:15.746Z",
+    "product_push_timestamp": "2020-06-18T10:47:34.779Z",
+    "mcr_account_id": "",
+    "bundle_id": "",
+    "event_info": {
+      "ip_address": null
+    },
+    "model_properties": {
+      "id": 54,
+      "email_id": 41,
+      "creator_id": 11,
+      "template_id": null,
+      "direction": "Outgoing",
+      "status": "Sent",
+      "subject": "sample subject",
+      "needs_tracking": false,
+      "scheduled_at": null,
+      "date_header": "2020-06-18T10:39:00Z",
+      "message_id": "&lt;5e44eb48.36@freports.reports.freshmarketeer.com&gt;",
+      "ref_conversation_id": null,
+      "email_status": "Sent",
+      "unsubscribe": false,
+      "created_at": "2020-06-18T10:37:38Z",
+      "updated_at": "2020-06-18T10:39:01Z",
+      "in_reply_to": "&lt;SalesSequence.3000027847.baad.728d31b5@sample.freshsales.io&gt;",
+      "email_association": true,
+ &nbsp; &nbsp; &nbsp; "email_recipients": [
+        {
+          "id": 138,
+          "email_id": 41,
+          "conversation_id": 54,
+          "targetable_id": 11,
+          "targetable_type": "FdMultitenant::User",
+          "field": "from",
+          "email_address": "prakash.thiyagarajan@freshworks.com",
+          "email_name": "Pr***** ********** *****an",
+          "bounced": false,
+          "opened": false,
+          "clicked": false,
+          "bounced_time": null,
+          "opened_time": null,
+          "clicked_time": null,
+          "created_at": "2020-06-18T10:37:38Z",
+          "updated_at": "2020-06-18T10:37:38Z",
+          "unsubscribed": false,
+          "unsubscribed_time": null
+        },
+        {
+          "id": 139,
+          "email_id": 41,
+          "conversation_id": 54,
+          "targetable_id": 11,
+          "targetable_type": "FdMultitenant::User",
+          "field": "reply_to",
+          "email_address": "pran+b@freports.reports.freshmarketeer.com",
+          "email_name": "Pr***** ********** *****an",
+          "bounced": false,
+          "opened": false,
+          "clicked": false,
+          "bounced_time": null,
+          "opened_time": null,
+          "clicked_time": null,
+          "created_at": "2020-06-18T10:37:38Z",
+          "updated_at": "2020-06-18T10:37:38Z",
+          "unsubscribed": false,
+          "unsubscribed_time": null
+        },
+        {
+          "id": 140,
+          "email_id": 41,
+          "conversation_id": 54,
+          "targetable_id": 137,
+          "targetable_type": "Contact",
+          "field": "to",
+          "email_address": "sample4@gmail.com",
+          "email_name": "contact 1",
+          "bounced": false,
+          "opened": false,
+          "clicked": false,
+          "bounced_time": null,
+          "opened_time": null,
+          "clicked_time": null,
+          "created_at": "2020-06-18T10:37:48Z",
+          "updated_at": "2020-06-18T10:47:15Z",
+          "unsubscribed": false,
+          "unsubscribed_time": null
+        }
+      ],
+      "source_additional_info": {}
+    },
+    "associations": {
+      "creator": {
+        "id": 11,
+        "name": "Pr***** ********** *****an",
+        "type": "user",
+        "email": "prakash.thiyagarajan@freshworks.com",
+        "is_active": true,
+        "work_number": "**********",
+        "mobile_number": "**********",
+        "time_zone": "Kolkata",
+        "created_at": "2020-03-17T09:27:38Z",
+        "updated_at": "2020-05-14T08:34:07Z",
+        "deal_pipeline_id": 1,
+        "job_title": "**********",
+        "uuid": "f5f6ed8c-33f6-e1ff-9240-5ce49f0b9f94"
+      }
+    },
+    "changes": {
+      "model_changes": {
+        "recipients": {
+          "changed": [
+            [
+              {
+                "id": 140,
+                "email_id": 41,
+                "conversation_id": 54,
+                "targetable_id": 136,
+                "targetable_type": "Contact",
+                "field": "to",
+                "email_address": "sample3@gmail.com",
+                "email_name": "contact 1",
+                "bounced": false,
+                "opened": false,
+                "clicked": false,
+                "bounced_time": null,
+                "opened_time": null,
+                "clicked_time": null,
+                "created_at": "2020-06-18T10:37:48Z",
+                "updated_at": "2020-06-18T10:37:48Z",
+                "unsubscribed": false,
+                "unsubscribed_time": null
+              },
+              {
+                "id": 140,
+                "email_id": 41,
+                "conversation_id": 54,
+                "targetable_id": 137,
+                "targetable_type": "Contact",
+                "field": "to",
+                "email_address": "sample4@gmail.com",
+                "email_name": "contact 1",
+                "bounced": false,
+                "opened": false,
+                "clicked": false,
+                "bounced_time": null,
+                "opened_time": null,
+                "clicked_time": null,
+                "created_at": "2020-06-18T10:37:48Z",
+                "updated_at": "2020-06-18T10:47:15Z",
+                "unsubscribed": false,
+                "unsubscribed_time": null
+              }
+            ]
+          ]
+        }
+      },
+      "system_changes": {},
+      "misc_changes": {}
+    }
+  }
+}
+</pre>
+ </div>
+</div><div class="code panel pdl" style="border-width: 1px;">
+ <div class="codeHeader panelHeader pdl hide-border-bottom" style="border-bottom-width: 1px;">
+  <b class="code-title">EMAIL CONVERSATION - destroy</b><span class="collapse-source expand-control" style="display:none;"><span class="expand-control-icon icon">&nbsp;</span><span class="expand-control-text">Expand source</span></span><span class="collapse-spinner-wrapper"></span>
+ </div>
+ <div class="codeContent panelContent pdl hide-toolbar">
+  <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: actionscript3; gutter: false; theme: Confluence; collapse: true" data-theme="Confluence">{
+  "account_id": "1581574984",
+  "organisation_id": "",
+  "pod": "useast1-pod1",
+  "region": "us-east-1",
+  "payload_type": "email_conversation_destroy",
+  "payload_version": "2.0",
+  "payload": {
+    "model": "EmailConversation",
+    "actor": {
+      "id": 0,
+      "name": "System",
+      "type": "system"
+    },
+    "action": "destroy",
+    "action_epoch": 1592477399.8669012,
+    "uuid": "74d2ea2ab15111eabc4a0242ac120007",
+    "account_full_domain": "freports.reports.freshmarketeer.com",
+    "event_timestamp": "2020-06-18T10:49:59.866Z",
+    "product_push_timestamp": "2020-06-18T10:50:04.747Z",
+    "mcr_account_id": "",
+    "bundle_id": "",
+    "event_info": {
+      "ip_address": null
+    },
+    "model_properties": {
+      "id": 54,
+      "email_recipient_ids": [
+        138,
+        139,
+        140
+      ],
+      "message_id": "&lt;5e44eb48.36@freports.reports.freshmarketeer.com&gt;",
+      "created_at": "2023-05-17T12:01:30Z",
+      "updated_at": "2023-05-17T12:22:09Z",
+ &nbsp; &nbsp; &nbsp; "source_additional_info": {}
+    }
+  }
+}</pre>
+ </div>
+</div>

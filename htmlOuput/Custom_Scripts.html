@@ -1,0 +1,1563 @@
+<h1>Title: Custom Scripts</h1><div class="code panel pdl" style="border-width: 1px;">
+ <div class="codeHeader panelHeader pdl hide-border-bottom" style="border-bottom-width: 1px;">
+  <b class="code-title">Get form from form_service</b><span class="collapse-source expand-control" style="display:none;"><span class="expand-control-icon icon">&nbsp;</span><span class="expand-control-text">Expand source</span></span><span class="collapse-spinner-wrapper"></span>
+ </div>
+ <div class="codeContent panelContent pdl hide-toolbar">
+  <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: ruby; gutter: true; theme: Confluence; collapse: true" data-theme="Confluence">service_form_id = &lt;service_form_id&gt;
+is_sales_360 = &lt;is_sales_360&gt; #give a boolean value (For fetching deal forms is_sales_360 should be false)
+url = FORMSERV_CONFIG['formserv_url'] + '/' + service_form_id
+api_key = is_sales_360 ? FORMSERV_CONFIG['api_tokens']['sales_360'] : FORMSERV_CONFIG['api_tokens']['default']
+
+puts HTTParty.get(url, headers: { 'Authorization' =&gt; api_key, 'Content-Type' =&gt; 'application/json' })</pre>
+ </div>
+</div><div class="code panel pdl" style="border-width: 1px;">
+ <div class="codeHeader panelHeader pdl hide-border-bottom" style="border-bottom-width: 1px;">
+  <b class="code-title">Generate SSO login link for accounts</b><span class="collapse-source expand-control" style="display:none;"><span class="expand-control-icon icon">&nbsp;</span><span class="expand-control-text">Expand source</span></span><span class="collapse-spinner-wrapper"></span>
+ </div>
+ <div class="codeContent panelContent pdl hide-toolbar">
+  <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: ruby; gutter: false; theme: Confluence; collapse: true" data-theme="Confluence">account_id = &lt;account_id&gt;
+user_email = &lt;user_email&gt;
+Sharding.select_shard_of(account_id) do
+  account = FdMultitenat::Account.find(account_id).make_current
+  LibraryUtil.generate_sso_link(account,user_email)
+end
+
+</pre>
+ </div>
+</div><div class="code panel pdl" style="border-width: 1px;">
+ <div class="codeHeader panelHeader pdl hide-border-bottom" style="border-bottom-width: 1px;">
+  <b class="code-title">Delete Tag Associations</b><span class="collapse-source expand-control" style="display:none;"><span class="expand-control-icon icon">&nbsp;</span><span class="expand-control-text">Expand source</span></span><span class="collapse-spinner-wrapper"></span>
+ </div>
+ <div class="codeContent panelContent pdl hide-toolbar">
+  <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: ruby; gutter: false; theme: Confluence; collapse: true" data-theme="Confluence">def delete_tag_associations(account_id, tag_names)
+result = []
+deleted_associations = []
+
+  Sharding.select_shard_of(account_id) do
+    account = FdMultitenant::Account.find(account_id)
+    account.make_current
+
+    tag_ids = account.tags.where(name: tag_names).map(&amp;:id)
+    entity_tag_associations = account.entity_tag_associations.where(tag_id: tag_ids)
+    puts entity_tag_associations.count
+
+    entity_tag_associations.each do |entity_tag_association|
+      record = entity_tag_association.targetable
+      if record
+        old_tags = record.tags.collect(&amp;:name)
+        new_tags = old_tags - [entity_tag_association.tag.name]
+        result &lt;&lt; [record.id, record.class.name, old_tags, new_tags]
+        record.tags = new_tags
+        record.save
+      else
+        deleted_associations &lt;&lt; entity_tag_association.id
+        entity_tag_association.destroy
+      end
+    end
+  end
+puts result
+puts deleted_associations
+end
+delete_tag_associations(12345678910, ["Tag1", "Tag2"])</pre>
+ </div>
+</div><p><br/></p><div class="code panel pdl" style="border-width: 1px;">
+ <div class="codeHeader panelHeader pdl hide-border-bottom" style="border-bottom-width: 1px;">
+  <b class="code-title">Enable custom module</b><span class="collapse-source expand-control" style="display:none;"><span class="expand-control-icon icon">&nbsp;</span><span class="expand-control-text">Expand source</span></span><span class="collapse-spinner-wrapper"></span>
+ </div>
+ <div class="codeContent panelContent pdl hide-toolbar">
+  <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: ruby; gutter: false; theme: Confluence; collapse: true" data-theme="Confluence">def enable_custom_module_and_disable_search_service(account_id)
+  Sharding.select_shard_of(account_id) do
+    account = FdMultitenant::Account.find(account_id)
+    account.make_current
+    account.add_feature(:custom_modules)
+
+    Search::EsSearchUtil.disable_search_service(account_id)
+  end
+end
+enable_custom_module_and_disable_search_service(12345678910)</pre>
+ </div>
+</div><div class="code panel pdl" style="border-width: 1px;">
+ <div class="codeHeader panelHeader pdl hide-border-bottom" style="border-bottom-width: 1px;">
+  <b class="code-title">Update Custom module Internal name</b><span class="collapse-source expand-control" style="display:none;"><span class="expand-control-icon icon">&nbsp;</span><span class="expand-control-text">Expand source</span></span><span class="collapse-spinner-wrapper"></span>
+ </div>
+ <div class="codeContent panelContent pdl hide-toolbar">
+  <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: ruby; gutter: false; theme: Confluence; collapse: true" data-theme="Confluence">def update_module_name(account_id, old_name, new_name)
+  Sharding.select_shard_of(account_id) do
+    account_record = FdMultitenant::Account.find(account_id).make_current
+    module_record = account_record.module_customizations.find_by_entity_name(old_name)
+    if module_record.nil?
+      puts "No module found with given old_name"
+      return
+    elsif !module_record.custom
+      puts "Should not update default module's internal name"
+      return
+    elsif !new_name.starts_with?(ModuleCustomization::PREFIX_FOR_ENTITY_NAME)
+      puts "Module internal name should start with 'cm_'"
+      return
+    else
+      module_record.entity_name = new_name
+      module_record.save
+    end
+  end
+end
+update_module_name(12345678910, "cm_old_name", "cm_new_name")</pre>
+ </div>
+</div><div class="code panel pdl" style="border-width: 1px;">
+ <div class="codeHeader panelHeader pdl hide-border-bottom" style="border-bottom-width: 1px;">
+  <b class="code-title">ReMap OrgV1 with Freshdesk Org And Remove Freshconnect</b><span class="collapse-source expand-control" style="display:none;"><span class="expand-control-icon icon">&nbsp;</span><span class="expand-control-text">Expand source</span></span><span class="collapse-spinner-wrapper"></span>
+ </div>
+ <div class="codeContent panelContent pdl hide-toolbar">
+  <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: ruby; gutter: false; theme: Confluence; collapse: true" data-theme="Confluence">def remap_fs_account_with_org_of_fd_account(fs_account_id, fd_account_domain)
+  Sharding.select_shard_of(fs_account_id) do
+    fs_account = FdMultitenant::Account.find(fs_account_id).make_current
+    fs_account_org_info = Freshid::ApiCalls.send(:send_request_with_client_cred_auth, :get, "https://api.freshworks.com/api/v1/account/#{fs_account.full_domain}/organisation")
+    Freshid::ApiCalls.send(:send_request_with_client_cred_auth, :delete, "https://api.freshworks.com/api/v1/organisation/#{fs_account_org_info[:id]}/account/#{fs_account.full_domain}")
+
+    fd_account_org_info = Freshid::ApiCalls.send(:send_request_with_client_cred_auth, :get, "https://api.freshworks.com/api/v1/account/#{fd_account_domain}/organisation")
+    Freshid::ApiCalls.send(:send_request_with_client_cred_auth, :put, "https://api.freshworks.com/api/v1/organisation/#{fd_account_org_info[:id]}/account/#{fs_account.full_domain}")
+
+    fc_config = fs_account.freshconnect_configuration
+    if fc_config.present?
+      fc_config.destroy
+      fs_account.remove_feature(:freshconnect)  
+    end
+    puts "Enable Freshconnect from Admin console after running the script"
+  end
+end
+remap_fs_account_with_org_of_fd_account(12345678910, "sample1234&amp;2313.freshdesk.com")</pre>
+ </div>
+</div><div class="code panel pdl" style="border-width: 1px;">
+ <div class="codeHeader panelHeader pdl hide-border-bottom" style="border-bottom-width: 1px;">
+  <b class="code-title">Update Freshconnect Domain</b><span class="collapse-source expand-control" style="display:none;"><span class="expand-control-icon icon">&nbsp;</span><span class="expand-control-text">Expand source</span></span><span class="collapse-spinner-wrapper"></span>
+ </div>
+ <div class="codeContent panelContent pdl hide-toolbar">
+  <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: ruby; gutter: false; theme: Confluence; collapse: true" data-theme="Confluence">def update_freshconnect_domain(account_id, new_domain)
+  Sharding.select_shard_of(account_id) do
+    account_record = FdMultitenant::Account.find(account_id).make_current
+    config = account_record.freshconnect_configuration
+    return if config.nil?
+
+    config.fc_domain = new_domain
+    config.save
+  end
+end
+update_freshconnect_domain(12345678910, "sample#21323232.fconnect.io")</pre>
+ </div>
+</div><div class="code panel pdl" style="border-width: 1px;">
+ <div class="codeHeader panelHeader pdl hide-border-bottom" style="border-bottom-width: 1px;">
+  <b class="code-title">Enabled specific types of notifications</b><span class="collapse-source expand-control" style="display:none;"><span class="expand-control-icon icon">&nbsp;</span><span class="expand-control-text">Expand source</span></span><span class="collapse-spinner-wrapper"></span>
+ </div>
+ <div class="codeContent panelContent pdl hide-toolbar">
+  <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: ruby; gutter: false; theme: Confluence; collapse: true" data-theme="Confluence">  NOTIFICATION_CONFIGURATION = [
+    [:task_reminder, 1, { remind_before_minutes: DEFAULT_REMINDER_MINUTES }, true],
+    [:appointment_reminder, 2, { remind_before_minutes: DEFAULT_REMINDER_MINUTES }, true],
+    [:task_owner_assignment, 3, { remind_before_minutes: DEFAULT_REMINDER_MINUTES }, true],
+    [:base_entities_owner_assignment, 4, { remind_before_minutes: DEFAULT_REMINDER_MINUTES }, true],
+    [:base_entities_owner_transfer, 5, {}, true],
+    [:email_conversation_open, 6, {}, true],
+    [:email_conversation_link_click, 7, {}, true],
+    [:email_conversation_received, 8, {}, true],
+    [:lead_assignment, 9, {}, true],
+    [:task_assignment, 10, {}, true],
+    [:appointment_assignment, 11, {}, true],
+    [:base_entity_assignment, 12, {}, true],
+    [:quickbooks_payments_received, 13, {}, true],
+    [:entities_assignment_real_time, 14, {}, false],
+    [:entities_transfer_real_time, 15, {}, false],
+    [:appointment_create, 16, {}, false],
+    [:sales_activity_assignment_email, 17, {}, true],
+    [:sales_activity_assignment, 18, {}, true],
+    [:sales_activity_reminder, 19, { remind_before_minutes: DEFAULT_REMINDER_MINUTES }, true],
+    [:sales_goal_assignment, 20, {}, true],
+    [:entity_shared, 21, {}, true],
+    [:reminder, 22, { remind_before_minutes: DEFAULT_REMINDER_MINUTES }, true],
+  ].freeze
+
+def enable_notifications(account_id, notification_types)
+  Sharding.select_shard_of(account_id) do
+    account = FdMultitenant::Account.find_by_id(account_id).make_current
+
+    UserNotification.where(account_id: account.id, notification_type: notification_types).each do |notif|
+        notif.is_enabled = true
+        notif.save
+    end
+  end
+end
+
+enable_notifications(12345678910, [1,2,3,4])</pre>
+ </div>
+</div><div class="code panel pdl" style="border-width: 1px;">
+ <div class="codeHeader panelHeader pdl hide-border-bottom" style="border-bottom-width: 1px;">
+  <b class="code-title">Disable specific types of notifications</b><span class="collapse-source expand-control" style="display:none;"><span class="expand-control-icon icon">&nbsp;</span><span class="expand-control-text">Expand source</span></span><span class="collapse-spinner-wrapper"></span>
+ </div>
+ <div class="codeContent panelContent pdl hide-toolbar">
+  <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: ruby; gutter: false; theme: Confluence; collapse: true" data-theme="Confluence">  NOTIFICATION_CONFIGURATION = [
+    [:task_reminder, 1, { remind_before_minutes: DEFAULT_REMINDER_MINUTES }, true],
+    [:appointment_reminder, 2, { remind_before_minutes: DEFAULT_REMINDER_MINUTES }, true],
+    [:task_owner_assignment, 3, { remind_before_minutes: DEFAULT_REMINDER_MINUTES }, true],
+    [:base_entities_owner_assignment, 4, { remind_before_minutes: DEFAULT_REMINDER_MINUTES }, true],
+    [:base_entities_owner_transfer, 5, {}, true],
+    [:email_conversation_open, 6, {}, true],
+    [:email_conversation_link_click, 7, {}, true],
+    [:email_conversation_received, 8, {}, true],
+    [:lead_assignment, 9, {}, true],
+    [:task_assignment, 10, {}, true],
+    [:appointment_assignment, 11, {}, true],
+    [:base_entity_assignment, 12, {}, true],
+    [:quickbooks_payments_received, 13, {}, true],
+    [:entities_assignment_real_time, 14, {}, false],
+    [:entities_transfer_real_time, 15, {}, false],
+    [:appointment_create, 16, {}, false],
+    [:sales_activity_assignment_email, 17, {}, true],
+    [:sales_activity_assignment, 18, {}, true],
+    [:sales_activity_reminder, 19, { remind_before_minutes: DEFAULT_REMINDER_MINUTES }, true],
+    [:sales_goal_assignment, 20, {}, true],
+    [:entity_shared, 21, {}, true],
+    [:reminder, 22, { remind_before_minutes: DEFAULT_REMINDER_MINUTES }, true],
+  ].freeze
+
+def disable_notifications(account_id, notification_types)
+  Sharding.select_shard_of(account_id) do
+    account = FdMultitenant::Account.find_by_id(account_id).make_current
+
+    UserNotification.where(account_id: account.id, notification_type: notification_types).each do |notif|
+        notif.is_enabled = false
+        notif.save
+    end
+  end
+end
+
+disable_notifications(12345678910, [1,2,3,4])</pre>
+ </div>
+</div><div class="code panel pdl" style="border-width: 1px;">
+ <div class="codeHeader panelHeader pdl hide-border-bottom" style="border-bottom-width: 1px;">
+  <b class="code-title">Update Email Tracking Configuration</b><span class="collapse-source expand-control" style="display:none;"><span class="expand-control-icon icon">&nbsp;</span><span class="expand-control-text">Expand source</span></span><span class="collapse-spinner-wrapper"></span>
+ </div>
+ <div class="codeContent panelContent pdl hide-toolbar">
+  <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: ruby; gutter: false; theme: Confluence; collapse: true" data-theme="Confluence">def update_email_tracking_config(account_id)
+  Sharding.select_shard_of(account_id) do
+    account = FdMultitenant::Account.find_by_id(account_id).make_current
+
+    Email::Setting.where(account_id: account_id).each do |setting|
+      setting.auto_create_entity = false
+      setting.email_tracking = true
+      setting.email_association = true
+      setting.save
+    end
+  end 
+end
+update_email_tracking_config(12345678910)</pre>
+ </div>
+</div><div class="code panel pdl" style="border-width: 1px;">
+ <div class="codeHeader panelHeader pdl hide-border-bottom" style="border-bottom-width: 1px;">
+  <b class="code-title">Add Feature to account</b><span class="collapse-source expand-control" style="display:none;"><span class="expand-control-icon icon">&nbsp;</span><span class="expand-control-text">Expand source</span></span><span class="collapse-spinner-wrapper"></span>
+ </div>
+ <div class="codeContent panelContent pdl hide-toolbar">
+  <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: ruby; gutter: true; theme: Confluence; collapse: true" data-theme="Confluence">acc_id = 12345678910
+Sharding.select_shard_of(acc_id) do
+  FdMultitenant::Account.find(acc_id).make_current
+  FdMultitenant::Account.current.add_feature(:activity_dashboard)
+end</pre>
+ </div>
+</div><div class="code panel pdl" style="border-width: 1px;">
+ <div class="codeHeader panelHeader pdl hide-border-bottom" style="border-bottom-width: 1px;">
+  <b class="code-title">Add choices to a field based on label</b><span class="collapse-source expand-control" style="display:none;"><span class="expand-control-icon icon">&nbsp;</span><span class="expand-control-text">Expand source</span></span><span class="collapse-spinner-wrapper"></span>
+ </div>
+ <div class="codeContent panelContent pdl hide-toolbar">
+  <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: ruby; gutter: true; theme: Confluence; collapse: true" data-theme="Confluence">def add_choices_to_field(account_id, model, field_label, choices)
+    Sharding.select_shard_of(account_id) do
+      account = FdMultitenant::Account.find(account_id)
+      account.make_current
+      form = FdMultitenant::Account.current.cached_default_form_for(model)
+      field = form.find_field_by(:label, field_label)
+      return if field.blank?
+      last_postion = field.choices.last[:position] || 0
+      choices_to_add = choices.map { |ch | {:id =&gt; nil, :value =&gt; ch, :position =&gt; last_postion += 1} }
+      form.update_field(field.id, choices: choices_to_add, skip_callbacks: true)
+      p "Added choices to account_id = #{account_id}, on field: label = #{field_label}"
+      FdMultitenant::Account.current.send("clear_cached_#{model}_forms".to_sym)
+    end
+  end
+choices = ["Tribe_01_sq","Tribe_02_sq","Tribe_03","Tribe_04","Tribe_05","Tribe_06","Tribe_07"]
+add_choices_to_field(12345678910, "deal", "test1", choices)</pre>
+ </div>
+</div><div class="code panel pdl" style="border-width: 1px;">
+ <div class="codeHeader panelHeader pdl hide-border-bottom" style="border-bottom-width: 1px;">
+  <b class="code-title">Update base currency for an account</b><span class="collapse-source expand-control" style="display:none;"><span class="expand-control-icon icon">&nbsp;</span><span class="expand-control-text">Expand source</span></span><span class="collapse-spinner-wrapper"></span>
+ </div>
+ <div class="codeContent panelContent pdl hide-toolbar">
+  <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: ruby; gutter: true; theme: Confluence; collapse: true" data-theme="Confluence">def update_base_currency_code(account_id, old_currency_code, new_currency_code)
+  Sharding.select_shard_of(account_id) do
+    account = FdMultitenant::Account.find_by_id(account_id)
+    return if account.blank?
+    account.make_current
+    puts "Old Base Currency Code #{old_currency_code}"
+    puts "Requested Base Currency Code #{new_currency_code}"
+    puts "*********************************************"
+    base_currency = Currency.where(currency_code: old_currency_code, currency_type: 1).first
+    return if base_currency.blank?
+    puts "Base currency is present"
+    new_currency = Currency.find_by_currency_code(new_currency_code)
+    if new_currency.present?
+      new_currency.update_column(:currency_type, 1)
+      base_currency.update_column(:currency_type, 3)
+      account.clear_cached_currencies
+  	  account.invalidate_sessions_version_from_client_cache
+      puts "Base currency is swapped"
+      new_base_currency = Currency.base_currency[:currency_code]
+      puts "New Base Currency Code #{new_base_currency}"
+      puts "*********************************************"
+      Currency.all.each do |cur|
+        puts "Code #{cur.currency_code}. Exchange rate - #{cur.exchange_rate}"
+        res = MultiCurrency::CurrencyRateClient.new.get_rate(new_base_currency, [cur.currency_code])
+        rate = res[:error].blank? ? res[cur.currency_code] : nil
+        cur.exchange_rate = rate
+        cur.save
+        puts "Code #{cur.currency_code}. New Exchange rate - #{cur.exchange_rate}"
+      end
+    else
+      puts "ERROR!"
+    end
+  end
+end
+
+update_base_currency_code(123567, 'USD', 'INR')</pre>
+ </div>
+</div><div class="code panel pdl" style="border-width: 1px;">
+ <div class="codeHeader panelHeader pdl hide-border-bottom" style="border-bottom-width: 1px;">
+  <b class="code-title">Mark unique field as non-unique</b><span class="collapse-source expand-control" style="display:none;"><span class="expand-control-icon icon">&nbsp;</span><span class="expand-control-text">Expand source</span></span><span class="collapse-spinner-wrapper"></span>
+ </div>
+ <div class="codeContent panelContent pdl hide-toolbar">
+  <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: ruby; gutter: true; theme: Confluence; collapse: true" data-theme="Confluence">account_id = &lt;account_id&gt;
+user_id = &lt;user_id&gt;
+field_class = &lt;module&gt;
+field_name = &lt;field_internal_name&gt;
+Sharding.select_shard_of(account_id) do |shard|
+  return if !field_class.in?(['Lead', 'Contact', 'SalesAccount', 'Deal'])
+  account = FdMultitenant::Account.find_by_id(account_id)
+  if account.blank?
+    puts 'Account not found'
+    return
+  end
+  account.make_current
+  user = FdMultitenant::User.find_by_id(user_id)
+  if user.blank?
+    puts 'User not found'
+    return
+  end
+  user.make_current
+  form = FdMultitenant::Account.current.default_form_for(field_class)
+  if form.blank?
+    puts 'Form not found'
+    return
+  end
+  field = form.find_field_by(:name, field_name)
+  if field.blank?
+    puts 'Field not found'
+    return
+  end
+  field.field_options['unique'] = 'false'
+  form.update_field(field.id, field_options: field.field_options)
+  puts 'Field made non unique'
+end</pre>
+ </div>
+</div><div class="code panel pdl" style="border-width: 1px;">
+ <div class="codeHeader panelHeader pdl hide-border-bottom" style="border-bottom-width: 1px;">
+  <b class="code-title">Create bulk custom fields</b><span class="collapse-source expand-control" style="display:none;"><span class="expand-control-icon icon">&nbsp;</span><span class="expand-control-text">Expand source</span></span><span class="collapse-spinner-wrapper"></span>
+ </div>
+ <div class="codeContent panelContent pdl hide-toolbar">
+  <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: ruby; gutter: false; theme: Confluence; collapse: true" data-theme="Confluence">def create_bulk_custom_fields(account, entity_type)
+  puts 'Creating 70 text fields'
+  (1..70).each do |i|
+    create_custom_field(account, entity_type, "text_field_#{i}", :text)
+  end
+  puts '70 text fields got created'
+
+  puts 'Creating 20 paragraph fields'
+  (1..20).each do |i|
+    create_custom_field(account, entity_type, "paragraph_field_#{i}", :paragraph)
+  end
+  puts '20 paragraph fields got created'
+
+  puts 'Creating 70 decimal fields'
+  (1..70).each do |i|
+    create_custom_field(account, entity_type, "decimal_field_#{i}", :decimal)
+  end
+  puts '70 decimal fields got created'
+
+
+  puts 'Creating 70 checkbox fields'
+  (1..70).each do |i|
+    create_custom_field(account, entity_type, "checkbox_field_#{i}", :checkbox)
+  end
+  puts '70 checkbox fields got created'
+
+  puts 'Creating 70 date_time fields'
+  (1..70).each do |i|
+    create_custom_field(account, entity_type, "date_field_#{i}", :date_time)
+  end
+  puts '70 date_time fields got created'
+end
+
+def create_custom_field(account, entity_type, label, dom_type, options = nil)
+  options ||= {}
+  form = account.cached_default_form_for(entity_type)
+  puts "Object id is --&gt; #{form.object_id}"
+  field = form.find_field_by(:label, label)
+  begin
+    if field.nil?
+      field_options = { label: label, type: form.class::FIELD_TYPE_KEYS_BY_TOKEN[dom_type] }
+      field_options.merge!(options)
+      field = form.create_field(field_options)
+    end
+  rescue =&gt; e
+    puts "Error is #{e.message}"
+  end
+  field
+end
+
+account = FdMultitenant::Account.find(account_id).make_current
+create_bulk_custom_fields account, "Contact"</pre>
+ </div>
+</div><div class="code panel pdl" style="border-width: 1px;">
+ <div class="codeHeader panelHeader pdl hide-border-bottom" style="border-bottom-width: 1px;">
+  <b class="code-title">Scripts and rake tasks for reindexing elasticsearch</b><span class="collapse-source expand-control" style="display:none;"><span class="expand-control-icon icon">&nbsp;</span><span class="expand-control-text">Expand source</span></span><span class="collapse-spinner-wrapper"></span>
+ </div>
+ <div class="codeContent panelContent pdl hide-toolbar">
+  <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: ruby; gutter: false; theme: Confluence; collapse: true" data-theme="Confluence"># Search Service
+# Used when thrown SearchService::Errors::AccountNotFoundException 
+def check_and_reindex_in_search_service(account_id)
+	required = Search::Strategies::SearchService::Response.reindex_required?(account_id)
+    puts "Search service reindex required - #{required}"
+	return unless required
+	Search::Strategies::SearchService::Reindex.reindex_accounts(index_account_id: account_id) 
+end
+# equivalent&nbsp;rake task - rake search:reindex_account ACCOUNTS="1,2,3"
+ 
+# Freshsales Elasticsearch cluster
+
+def check_and_create_aliases(acc)
+&nbsp; &nbsp; # used for IndexMissingException
+&nbsp; &nbsp; client = Search::EsSearch.new(acc)
+&nbsp; &nbsp; Search::EsSearch::ES_INDICES.each do |model|
+&nbsp; &nbsp; &nbsp; &nbsp; p model
+&nbsp; &nbsp; &nbsp; &nbsp; unless client.alias_exist?(model)
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; loop do
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;begin
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; client.create_alias(model)
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; p 'created alias - ' + model
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; break
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;rescue StandardError =&gt; e
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; sleep 0.5
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; p 'retry'
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;end
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;end
+&nbsp; &nbsp; &nbsp; &nbsp; end
+&nbsp; &nbsp; end
+end
+ 
+# rake task to reindex in elasticsearch cluster - rake elasticsearch:reindex_account[1]</pre>
+ </div>
+</div><p><br/></p><div class="code panel pdl" style="border-width: 1px;">
+ <div class="codeHeader panelHeader pdl hide-border-bottom" style="border-bottom-width: 1px;">
+  <b class="code-title">transfer lcad records ownership </b><span class="collapse-source expand-control" style="display:none;"><span class="expand-control-icon icon">&nbsp;</span><span class="expand-control-text">Expand source</span></span><span class="collapse-spinner-wrapper"></span>
+ </div>
+ <div class="codeContent panelContent pdl hide-toolbar">
+  <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: ruby; gutter: false; theme: Confluence; collapse: true" data-theme="Confluence">def transfer_lcad_records_ownership(account_id, from_user_id, to_user_id, updater_id)
+  Sharding.select_shard_of(account_id) do
+    FdMultitenant::Account.find(account_id).make_current
+    FdMultitenant::User.find(updater_id).make_current
+    to_user = FdMultitenant::User.find(to_user_id)
+    %w[Lead Contact SalesAccount Deal].each do |entity|
+      records = entity.constantize.where(owner_id: from_user_id)
+      records.each do |record|
+        record.owner = to_user
+        record.save
+      end
+    end
+  end
+end
+
+transfer_lcad_records_ownership(&lt;account_id&gt;, &lt;from_user_id&gt;, &lt;to_user_id&gt;, &lt;updater_id&gt;)</pre>
+ </div>
+</div><div class="code panel pdl" style="border-width: 1px;">
+ <div class="codeHeader panelHeader pdl hide-border-bottom" style="border-bottom-width: 1px;">
+  <b class="code-title">Migrate deals to default deal stage</b><span class="collapse-source expand-control" style="display:none;"><span class="expand-control-icon icon">&nbsp;</span><span class="expand-control-text">Expand source</span></span><span class="collapse-spinner-wrapper"></span>
+ </div>
+ <div class="codeContent panelContent pdl hide-toolbar">
+  <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: ruby; gutter: false; theme: Confluence; collapse: true" data-theme="Confluence">def move_deals_to_default_stage(account_id, deleted_stage_id)
+  Sharding.select_shard_of(account_id) do
+    account = FdMultitenant::Account.find(account_id).make_current
+    deleted_deal_stage = DealStage.unscoped.where(account_id: account_id, id: deleted_stage_id).first
+
+    if deleted_deal_stage.nil?
+      puts "There is no deal stage exists with given deleted_stage_id"
+      return
+    end
+
+    pipeline_id = deleted_deal_stage.deal_pipeline_id
+
+    if pipeline_id.nil?
+      puts "Deal pipeline doesn't exist. Try moving all the deals to another pipeline"
+      return
+    end
+
+    pipeline = account.deal_pipelines.find_by_id(pipeline_id)
+    default_open_stage = pipeline.default_open_stage
+
+    if default_open_stage.nil?
+      puts "There is no default deal stage exists in given pipeline"
+      return
+    end
+
+    puts "Moving deals to #{default_open_stage.id}"
+    deals = account.deals.where(deal_stage_id: deleted_stage_id, is_deleted: false)
+      deals.each do |deal|
+      deal.skip_validations = true
+      deal.update_attributes(deal_stage_id: default_open_stage.id)
+    end
+  end
+end
+move_deals_to_default_stage(123567, 2134245)</pre>
+ </div>
+</div><div class="code panel pdl" style="border-width: 1px;">
+ <div class="codeHeader panelHeader pdl hide-border-bottom" style="border-bottom-width: 1px;">
+  <b class="code-title">Delete Freshconnect entry</b><span class="collapse-source expand-control" style="display:none;"><span class="expand-control-icon icon">&nbsp;</span><span class="expand-control-text">Expand source</span></span><span class="collapse-spinner-wrapper"></span>
+ </div>
+ <div class="codeContent panelContent pdl hide-toolbar">
+  <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: ruby; gutter: false; theme: Confluence; collapse: true" data-theme="Confluence">def delete_freshconnect_entry(account_id)
+ Sharding.select_shard_of(account_id) do
+   account_record = FdMultitenant::Account.find(account_id).make_current
+   config = account_record.freshconnect_configuration
+   return if config.nil?
+
+   config.destroy
+   account_record.remove_feature(:freshconnect)
+ end
+end</pre>
+ </div>
+</div><div class="code panel pdl" style="border-width: 1px;">
+ <div class="codeHeader panelHeader pdl hide-border-bottom" style="border-bottom-width: 1px;">
+  <b class="code-title">update parent id of a field</b><span class="collapse-source expand-control" style="display:none;"><span class="expand-control-icon icon">&nbsp;</span><span class="expand-control-text">Expand source</span></span><span class="collapse-spinner-wrapper"></span>
+ </div>
+ <div class="codeContent panelContent pdl hide-toolbar">
+  <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: ruby; gutter: true; theme: Confluence; collapse: true" data-theme="Confluence">acc_id = &lt;acc_id&gt;
+form_class = &lt;module_name&gt;
+parent_field_name = &lt;parent_field_name&gt;
+child_field_name = &lt;child_field_name&gt;
+
+Sharding.select_shard_of(acc_id) do
+  current_account = FdMultitenant::Account.find(acc_id).make_current
+
+  form = current_account.cached_default_form_for(form_class)
+  parentField = form.find_field_by(:name, parent_field_name)
+  childField = form.find_field_by(:name, child_field_name)
+  form.update_field(childField.id, parent_id: parentField.id)
+
+  current_account.reset_forms_cache_for(form_class)
+end</pre>
+ </div>
+</div><div class="code panel pdl" style="border-width: 1px;">
+ <div class="codeHeader panelHeader pdl hide-border-bottom" style="border-bottom-width: 1px;">
+  <b class="code-title">move FSA account to org v2</b><span class="collapse-source expand-control" style="display:none;"><span class="expand-control-icon icon">&nbsp;</span><span class="expand-control-text">Expand source</span></span><span class="collapse-spinner-wrapper"></span>
+ </div>
+ <div class="codeContent panelContent pdl hide-toolbar">
+  <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: ruby; gutter: true; first-line: 1; theme: Confluence; collapse: true" data-theme="Confluence">def initiate_migration( fs_domain, org_domain, org_admin = nil)
+  response = nil
+  Sharding.select_shard_of(fs_domain) do
+    account = FdMultitenant::Account.find_by_full_domain(fs_domain)
+    return if account.nil?
+    account.make_current
+    body = {
+        accounts: [
+            {
+                domain: fs_domain,
+                product_id: FRESHID_V2_CONFIG[:product_id],
+                external_id: account.id.to_s
+            }
+        ]
+    }
+    body[:admin_emails] = [org_admin] if org_admin.present?
+    body[:organisation_domain] = org_domain if org_domain.present?
+    response = HTTParty.patch("https://#{FRESHID_V2_CONFIG[:end_point]}/api/v2/migration/migrate",
+                              body: body.to_json,
+                              headers: {
+                                  'content-Type' =&gt; 'application/json',
+                                  'Accept' =&gt; 'application/json',
+                                  'Authorization' =&gt; "Bearer #{Freshid::V2::Auth.refresh_client_access_token.try(:credentials).try(:access_token)}"
+                              })
+    puts "Freshid Chain Migration AccountId: #{account.id} response:#{response}"
+    Rails.logger.info "Freshid Chain Migration AccountId: #{account.id} response:#{response}"
+  end
+  response.present? ? response.success? : nil
+end
+initiate_migration(&lt;FSA account full domain&gt;, &lt;Organisation domain&gt;, &lt;Org admin user email&gt;)</pre>
+ </div>
+</div><div class="code panel pdl" style="border-width: 1px;">
+ <div class="codeHeader panelHeader pdl hide-border-bottom" style="border-bottom-width: 1px;">
+  <b class="code-title">Remove the mobile/email mandatory feature and make last name mandatory for some accounts</b><span class="collapse-source expand-control" style="display:none;"><span class="expand-control-icon icon">&nbsp;</span><span class="expand-control-text">Expand source</span></span><span class="collapse-spinner-wrapper"></span>
+ </div>
+ <div class="codeContent panelContent pdl hide-toolbar">
+  <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: actionscript3; gutter: false; theme: Confluence; collapse: true" data-theme="Confluence">accounts = [&lt;account_ids&gt;]
+redis_key_for_mode = "MANDATE_MCR_CORE_FIELDS_MODE"
+mode = '4'
+variable_name_for_mode = "@@#{redis_key_for_mode}"
+
+FsRedis::Common.set_value($redis_restriction, :set, redis_key_for_mode, mode)
+FdMultitenant::Account.class_variable_set(variable_name_for_mode, mode)
+
+accounts.each do |account_id|
+  Sharding.select_shard_of(account_id) do
+    redis_key_for_feature = "MANDATE_MCR_CORE_FIELDS_3"
+    FsRedis::Common.set_hash_values($redis_restriction, redis_key_for_feature, [account_id.to_s, '1'])
+    
+    account = FdMultitenant::Account.find_by_id(account_id).make_current
+    contact_form = account.cached_default_form_for('Contact')
+    last_name_field = contact_form.find_field_by(:name, 'last_name')
+    contact_form.update_field(last_name_field.id, required: true)
+
+    lead_form = account.cached_default_form_for('Lead')
+    last_name_field = lead_form.find_field_by(:name, 'last_name')
+    lead_form.update_field(last_name_field.id, required: true)
+  end
+end</pre>
+ </div>
+</div><div class="code panel pdl" style="border-width: 1px;">
+ <div class="codeHeader panelHeader pdl hide-border-bottom" style="border-bottom-width: 1px;">
+  <b class="code-title">Remove dependency from form</b><span class="collapse-source expand-control" style="display:none;"><span class="expand-control-icon icon">&nbsp;</span><span class="expand-control-text">Expand source</span></span><span class="collapse-spinner-wrapper"></span>
+ </div>
+ <div class="codeContent panelContent pdl hide-toolbar">
+  <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: ruby; gutter: false; theme: Confluence; collapse: true" data-theme="Confluence">def remove_field_dependency(account_id, form_name, dependency_config_id, field_name)
+ Sharding.select_shard_of(account_id) do
+ 	current_account=FdMultitenant::Account.find(account_id).make_current
+	leadForm=current_account.cached_default_form_for(form_name)
+	depField=leadForm.find_field_by(:name, field_name)
+	depField.field_options["dependent"]=false
+	leadForm.update_field(depField.id,field_options:depField.field_options)
+    basicInfo=leadForm.find_field_by(:name,'basic_information')
+    leadForm.update_field(depField.id,parent_id:basicInfo.id)
+    dependent_config = FieldDependencyConfiguration.find_by_id(dependency_config_id)
+    if dependent_config.account_id == account_id &amp;&amp; dependent_config.status!=3
+     dependent_config.delete
+    end
+    current_account.reset_forms_cache_for(form_name)
+ end
+end
+
+
+remove_field_dependency(account_id, "Lead|Contact|Deal|SalesAccount", dependency_config_id, field_name)</pre>
+ </div>
+</div><p class="auto-cursor-target"><a href="https://confluence.freshworks.com/pages/viewpage.action?pageId=223786168">Setting up remote choices in Freshsales</a></p><div class="code panel pdl" style="border-width: 1px;">
+ <div class="codeHeader panelHeader pdl hide-border-bottom" style="border-bottom-width: 1px;">
+  <b class="code-title">mark field as non required</b><span class="collapse-source expand-control" style="display:none;"><span class="expand-control-icon icon">&nbsp;</span><span class="expand-control-text">Expand source</span></span><span class="collapse-spinner-wrapper"></span>
+ </div>
+ <div class="codeContent panelContent pdl hide-toolbar">
+  <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: ruby; gutter: true; theme: Confluence; collapse: true" data-theme="Confluence">account_id = &lt;account_id&gt;
+user_id = &lt;user_id&gt;
+field_class = &lt;module&gt;
+field_name = &lt;field_internal_name&gt;
+Sharding.select_shard_of(account_id) do |shard|
+  return if !field_class.in?(['Lead', 'Contact', 'SalesAccount', 'Deal'])
+  account = FdMultitenant::Account.find_by_id(account_id)
+  if account.blank?
+    puts 'Account not found'
+    return
+  end
+  account.make_current
+  user = FdMultitenant::User.find_by_id(user_id)
+  if user.blank?
+    puts 'User not found'
+    return
+  end
+  user.make_current
+  form = FdMultitenant::Account.current.default_form_for(field_class)
+  if form.blank?
+    puts 'Form not found'
+    return
+  end
+  field = form.find_field_by(:name, field_name)
+  if field.blank?
+    puts 'Field not found'
+    return
+  end
+  form.update_field(field.id, required: 'false')
+  puts 'Field made non required'
+end</pre>
+ </div>
+</div><div class="code panel pdl" style="border-width: 1px;">
+ <div class="codeHeader panelHeader pdl hide-border-bottom" style="border-bottom-width: 1px;">
+  <b class="code-title">reorder dependent fields</b><span class="collapse-source expand-control" style="display:none;"><span class="expand-control-icon icon">&nbsp;</span><span class="expand-control-text">Expand source</span></span><span class="collapse-spinner-wrapper"></span>
+ </div>
+ <div class="codeContent panelContent pdl hide-toolbar">
+  <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: ruby; gutter: true; first-line: 1; theme: Confluence; collapse: true" data-theme="Confluence">acc_id = &lt;account_id&gt;
+field_class = &lt;field_class&gt;
+sorted_field_names = %w[&lt;field names&gt;]
+Sharding.select_shard_of(acc_id) do
+  return unless field_class.in?(['Lead', 'Contact', 'SalesAccount', 'Deal'])
+  current_account = FdMultitenant::Account.find(acc_id).make_current
+  form = current_account.cached_default_form_for(field_class)
+  sorted_field_names.each_with_index do |field_name, ind|
+    field_id = form.find_field_by(:name, field_name).id
+    form.update_field(field_id, position: ind + 1)
+  end
+  current_account.reset_forms_cache_for(field_class)
+end</pre>
+ </div>
+</div><div class="code panel pdl" style="border-width: 1px;">
+ <div class="codeHeader panelHeader pdl hide-border-bottom" style="border-bottom-width: 1px;">
+  <b class="code-title">Retrigger Obfuscate User worker</b><span class="collapse-source expand-control" style="display:none;"><span class="expand-control-icon icon">&nbsp;</span><span class="expand-control-text">Expand source</span></span><span class="collapse-spinner-wrapper"></span>
+ </div>
+ <div class="codeContent panelContent pdl hide-toolbar">
+  <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: ruby; gutter: true; theme: Confluence; collapse: true" data-theme="Confluence">def run_obfuscate_user_worker(account_id, user_ids, admin_id)
+  Sharding.select_shard_of(account_id) do
+    FdMultitenant::Account.find(account_id).make_current
+    user_ids.each do |user_id|
+      ObfuscateUser.new.perform(user_id, {initiator_id: admin_id})
+    end
+  end
+end
+
+account_id = 113193
+user_ids = [5000018332, 5000025924]
+admin_id = 5000030711
+run_obfuscate_user_worker(account_id, user_ids, admin_id)</pre>
+ </div>
+</div><div class="code panel pdl" style="border-width: 1px;">
+ <div class="codeHeader panelHeader pdl hide-border-bottom" style="border-bottom-width: 1px;">
+  <b class="code-title">Reorder Deal Pipeline</b><span class="collapse-source expand-control" style="display:none;"><span class="expand-control-icon icon">&nbsp;</span><span class="expand-control-text">Expand source</span></span><span class="collapse-spinner-wrapper"></span>
+ </div>
+ <div class="codeContent panelContent pdl hide-toolbar">
+  <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: ruby; gutter: false; theme: Confluence; collapse: true" data-theme="Confluence">account_id = &lt;account_id&gt;
+ordered_pipelines = [&lt;pipeline_names_array&gt;]
+position = 1
+Sharding.select_shard_of(account_id) do
+ account = FdMultitenant::Account.find_by_id(account_id).make_current
+ pipelines = DealPipeline.all
+ ordered_pipelines.each do |curr|
+  curr = pipelines.find { |fld| fld.name == curr }
+  curr.position = position
+  curr.save
+  position += 1
+ end
+
+ deal_form = account.cached_default_form_for('Deal')
+ pipeline_field = deal_form.find_field_by(:name, 'deal_pipeline_id')
+ pipelines = DealPipeline.all
+ choice_params = pipelines.map do |pipeline|
+  { id: pipeline_field.choice_from_super_choices(pipeline.id).try(:id),
+   value: pipeline.name,
+   position: pipeline.position
+  }
+ end
+ deal_form.update_field(pipeline_field.id, choices: choice_params)
+end</pre>
+ </div>
+</div><div class="code panel pdl" style="border-width: 1px;">
+ <div class="codeHeader panelHeader pdl hide-border-bottom" style="border-bottom-width: 1px;">
+  <b class="code-title">Change user column name</b><span class="collapse-source expand-control" style="display:none;"><span class="expand-control-icon icon">&nbsp;</span><span class="expand-control-text">Expand source</span></span><span class="collapse-spinner-wrapper"></span>
+ </div>
+ <div class="codeContent panelContent pdl hide-toolbar">
+  <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: ruby; gutter: false; theme: Confluence; collapse: true" data-theme="Confluence">def correct_user_columns(account_id, user_id, entity_type, old_field_name, new_field_name)
+Sharding.select_shard_of(account_id) do
+ account = FdMultitenant::Account.find_by_id(account_id).make_current
+ user = account.users.find_by_id(user_id).make_current
+ user_column_record = user.user_columns.where(entity_type: entity_type).first
+ user_column_record.chosen_columns.each do |chosen_column|
+  next if chosen_column[:name] != old_field_name
+  chosen_column[:name] = new_field_name
+ end
+ user_column_record.save
+end
+end
+correct_user_columns(&lt;account_id&gt;, &lt;user_id&gt;, "Contact", "owner", "owner_id")</pre>
+ </div>
+</div><div class="code panel pdl" style="border-width: 1px;">
+ <div class="codeHeader panelHeader pdl hide-border-bottom" style="border-bottom-width: 1px;">
+  <b class="code-title">Clear recycle bin</b><span class="collapse-source expand-control" style="display:none;"><span class="expand-control-icon icon">&nbsp;</span><span class="expand-control-text">Expand source</span></span><span class="collapse-spinner-wrapper"></span>
+ </div>
+ <div class="codeContent panelContent pdl hide-toolbar">
+  <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: ruby; gutter: true; theme: Confluence; collapse: true" data-theme="Confluence">include TrashmanUtil
+
+  # Below two limits should be equal so that we can get the entitiy ids accordingly in the ENTITY_ID_SELECTION_QUERY
+  LIMIT = BUCKET_THRESHOLD = 1000
+  PARTITIONS_IN_A_GROUP = 4
+  SLAVE_REPLICATION_DELAY = 5
+  STATUS_INDEXED_MODELS = [Lead.name, Contact.name].freeze
+
+
+  def perform(args)
+    @delete_until_time = timing_calculator args['delete_until_time']
+    @slave_replication_delay = args['replication_delay'] || SLAVE_REPLICATION_DELAY
+    if args['shard'].present?
+      run_on_shard(args, args['shard'])
+    elsif args['account_id'].present?  
+      run_on_account(args)
+    else
+      Sharding.all_shards.each do |shard|
+        break if switch_is_on?
+        run_on_shard(args, shard)
+      end
+    end
+  rescue StandardError =&gt; e
+    Rails.logger.error "Exception: #{self.class.name}, Message =&gt; #{e.message}, Trace =&gt; #{e.backtrace.join('\n')}"
+  end
+
+  # Flow of Cleanup =&gt; running : per shard, per model, per account
+  # Adhering to best practices in multi-tenancy, therefore running it account by account
+  # Alternative approach is to group many accounts in a single bucket and run queries for them at one go
+  def run_on_shard(args, shard)
+    cleanup_models = entities_to_clean args['model']
+    debug_data = { shard: nil,  model: nil, account_id: nil }
+
+    Sharding.run_on_shard(shard) do
+      Rails.logger.debug "Starting to permanently delete records in SHARD =&gt; #{shard}, before this date #{@delete_until_time}"
+      puts "Starting to permanently delete records in SHARD =&gt; #{shard}, before this date #{@delete_until_time}"
+      debug_data[:shard] = shard
+      cleanup_models.each do |model|
+        debug_data[:model] = model
+        table_name = ModuleCustomization::MODEL_NAME_BY_TABLE_NAME[model]
+        shard_accounts_metrics = record_account_mapper(model, table_name)
+        buckets = divide_accounts_into_buckets(shard_accounts_metrics)
+        bucket_cleanup(buckets, model, table_name, debug_data)
+      end
+    end
+  rescue =&gt; e
+    Rails.logger.error "Exception: #{self.class.name}, debug data =&gt; #{debug_data}, Message =&gt; #{e.message}, Trace =&gt; #{e.backtrace.join('\n')}"
+    send_debug_email(e, debug_data)
+  end
+
+  # Flow of Cleanup =&gt; running : per account
+  def run_on_account(args)
+    cleanup_models = entities_to_clean args['model']
+    debug_data = { shard: nil,  model: nil, account_id: args['account_id'] }
+
+    Sharding.select_shard_of(args['account_id']) do
+      Rails.logger.debug "Starting to permanently delete records for account_id = #{args['account_id']}, before this date #{@delete_until_time}"
+      puts "Starting to permanently delete records for account_id = #{args['account_id']}, before this date #{@delete_until_time}"
+      debug_data[:shard] = Thread.current[:shard_selection].shard
+      cleanup_models.each do |model|
+        debug_data[:model] = model
+        table_name = ModuleCustomization::MODEL_NAME_BY_TABLE_NAME[model]
+        buckets = create_buckets_for_account(args['account_id'], model, table_name)
+        bucket_cleanup(buckets, model, table_name, debug_data)
+      end
+    end
+  rescue =&gt; e
+    puts "Exception: #{self.class.name}, single account cleanup, Message =&gt; #{e.message}, Trace =&gt; #{e.backtrace.join('\n')}"
+    send_debug_email(e, debug_data)
+  end
+
+  private
+
+  def bucket_cleanup(buckets, model, table_name, debug_data)
+    buckets.each_with_index do |account_id, idx|
+      break if switch_is_on?
+      debug_data[:account_id] = account_id
+      selection_query_construct_args = { entity_table_name: table_name, account_id: account_id, delete_until_time: @delete_until_time,
+                                           limit: LIMIT, condition: get_deleted_search_condition(model) }
+      results = exec_query(ENTITY_ID_SELECTION_QUERY % selection_query_construct_args, run_on_slave: true)
+      next if results.to_a.blank?
+      entity_ids = results.to_a.map { |itr| itr.first }
+
+      TrashmanUtil::Cleaner.new({ entity_type: model, account_id: account_id, entity_ids: entity_ids }).run
+      # Executing only one level of recursive cleanup for merged &amp; converted entities
+      merged_entities_args = merged_entities_payload(model, entity_ids, account_id)
+      TrashmanUtil::Cleaner.new(merged_entities_args).run unless merged_entities_args[:entity_ids].blank?
+      entity_ids_to_delete = entity_ids + merged_entities_args[:entity_ids]
+      if Contact.name == model
+        converted_entities_args = converted_lead_payload(model, entity_ids, account_id)
+        unless converted_entities_args[:entity_ids].blank?
+          TrashmanUtil::Cleaner.new(converted_entities_args).run 
+          exec_query("DELETE leads FROM leads WHERE ID IN (#{converted_entities_args[:entity_ids].join(', ')}) AND account_id = #{account_id}")
+        end
+      end
+      Rails.logger.debug "Deleting records permanently for Account =&gt; #{account_id}, model =&gt; #{model}, count =&gt; #{entity_ids.length}, IDs =&gt; #{entity_ids_to_delete}"
+      exec_query("DELETE #{table_name} FROM #{table_name} WHERE ID IN (#{entity_ids_to_delete.join(', ')}) AND account_id = #{account_id}")
+      sleep(@slave_replication_delay.to_i) if idx != (buckets.size - 1)
+    end
+  end
+
+  # used to create buckets for a single account
+  def create_buckets_for_account(account_id, model, table_name)
+    condition = get_deleted_search_condition(model)
+    account_metrics = []
+    query = "SELECT account_id, COUNT(id) as total FROM #{table_name}
+                WHERE account_id = #{account_id} AND (#{condition} AND updated_at &lt;= '#{@delete_until_time}')"
+    results = exec_query(query, run_on_slave: true)
+    results.to_a.each do |result|
+      account_metrics &lt;&lt; { result.first =&gt; result.last }
+    end
+    divide_accounts_into_buckets(account_metrics)
+  end
+
+  def exec_query(query, run_on_slave: false)
+    if run_on_slave
+      Sharding.run_on_slave do
+        ActiveRecord::Base.connection.execute(query)
+      end
+    else
+      ActiveRecord::Base.connection.execute(query)
+    end
+  end
+
+  # querying using a group of partitions, otherwise (group by account_id) will scan all partitions, causing mysql timeout
+  # using status for L/C query because of the index on the table
+  def record_account_mapper(model, table_name)
+    raise('Number of partitions should be divisible by partion group') if PerformTablePartition::PARTITION_SIZE % PARTITIONS_IN_A_GROUP != 0
+    number_of_query_groups = PerformTablePartition::PARTITION_SIZE/PARTITIONS_IN_A_GROUP
+    accounts_metrics = []
+    condition = get_deleted_search_condition(model)
+
+    if Rails.env.development? || Rails.env.test? # PARTITIONS disabled in test/dev
+      query = "SELECT account_id, COUNT(id) as total FROM #{table_name}
+                WHERE (#{condition} AND updated_at &lt;= '#{@delete_until_time}') GROUP BY account_id"
+      results = exec_query(query, run_on_slave: true)
+      results.to_a.each do |result|
+        accounts_metrics &lt;&lt; { result.first =&gt; result.last }
+      end
+    else
+      (0..number_of_query_groups-1).each do |number|
+        first_partition_number = PARTITIONS_IN_A_GROUP * number
+        partition_group = "p#{first_partition_number}, p#{first_partition_number + 1}, p#{first_partition_number + 2}, p#{first_partition_number + 3}"
+        query = "SELECT account_id, COUNT(id) as total FROM #{table_name} PARTITION (#{partition_group})
+                  WHERE (#{condition} AND updated_at &lt;= '#{@delete_until_time}') GROUP BY account_id"
+        results = exec_query(query, run_on_slave: true)
+        results.to_a.each do |result|
+          accounts_metrics &lt;&lt; { result.first =&gt; result.last }
+        end
+      end
+    end
+    accounts_metrics
+  end
+
+  def divide_accounts_into_buckets(metrics)
+    return [] if metrics.blank?
+    buckets = []
+    metrics.each do |item|
+      account_id, count = item.first
+      number_of_buckets = (count/BUCKET_THRESHOLD)
+      if count % BUCKET_THRESHOLD == 0 
+        number_of_buckets.times do
+          buckets &lt;&lt; account_id
+        end
+      else
+        (number_of_buckets + 1).times do
+          buckets &lt;&lt; account_id
+        end
+      end
+    end
+    buckets
+  end
+
+  # divide accounts into nearly balanced buckets of a given threshold which is based on the count of the deleted records in that account
+  # @param [Hash] metrics = {account_id =&gt; number of deleted records of a particular model}
+  # Ex-metrics = [{1=&gt;1065}, {69=&gt;500}, {2=&gt;450}, {3=&gt;126}, {4=&gt;46}, {5=&gt;10}, {6=&gt;2}, {7=&gt;1}, {8=&gt;1}, {9=&gt;1}, {10=&gt;1}]
+  # Bucket Structure - [bucket's current capacity, array containing account ids]
+  # def divide_accounts_into_buckets(metrics)
+  #   return [] if metrics.empty?
+  #   buckets = [[0,[]]]
+  #   metrics.each do |item|
+  #     account_id, count = item.first
+  #     capacity = BUCKET_THRESHOLD - buckets.last[0]
+  #     if capacity == 0
+  #       make_buckets(buckets, count, account_id, BUCKET_THRESHOLD)
+  #     elsif (count + buckets.last[0]) &gt; BUCKET_THRESHOLD
+  #       buckets.last[0] += capacity
+  #       buckets.last[1] &lt;&lt; account_id
+  #       count -= capacity
+  #       make_buckets(buckets, count, account_id, BUCKET_THRESHOLD)
+  #     else
+  #       buckets.last[0] += count
+  #       buckets.last[1] &lt;&lt; account_id
+  #     end
+  #   end
+  #   buckets.map { |element| element.last }
+  # end
+
+  # def make_buckets(buckets, count, account_id, threshold)
+  #   number_of_buckets = (count/threshold)
+  #   number_of_buckets.times do
+  #     buckets &lt;&lt; [ threshold, [account_id]]
+  #     count -= threshold 
+  #   end
+  #   buckets &lt;&lt; [count % threshold, [account_id]] if count &gt; 0
+  # end
+
+  # Kill Switch, acting as a circuit breaker for stopping the worker (Set manually when required)
+  def switch_is_on?
+    $redis_schedule_jobs.get(FsRedis::RedisKeys::STOP_TRASHMAN)
+  end
+
+  def merged_entities_payload(model, entity_ids, account_id)
+    return { entity_ids: [] } if Deal.name == model
+    merged_entities_ids = []
+    Sharding.run_on_slave do
+      merged_entities_ids = model.constantize.unscoped.select([:id]).where("account_id = ? AND merged_to IN (?)", account_id, entity_ids).collect(&amp;:id)
+    end
+    { entity_type: model, account_id: account_id, entity_ids: merged_entities_ids }
+  end
+
+  def converted_lead_payload(model, entity_ids, account_id)
+    Sharding.run_on_slave do
+      lead_ids = Lead.unscoped.where(account_id: account_id, status: ENTITY_STATUS[:converted], contact_id: entity_ids).pluck(:id)
+      return { entity_type: Lead.name, account_id: account_id, entity_ids: lead_ids || [] }
+    end
+  end
+
+  def timing_calculator(start_time)
+    # 00:00:00 UTC, Time.now.utc.ago(DAYS_TO_RETAIN_RECORDS_IN_RECYCLE_BIN.days).beginning_of_day
+    start_time || Time.now.utc.ago(DAYS_TO_RETAIN_RECORDS_IN_RECYCLE_BIN.days + 7.days).beginning_of_week.to_s(:db)
+  
+    # 23:59:59 UTC, Time.now.utc.ago(DAYS_TO_RETAIN_RECORDS_IN_RECYCLE_BIN.days).end_of_day
+    # end_date = end_time || Time.now.utc.ago(DAYS_TO_RETAIN_RECORDS_IN_RECYCLE_BIN.days + 7.days).end_of_week.to_s(:db)
+    #raise("Difference between start_time &amp; end_time can't be more than 31 days") if (end_date.to_date - start_date.to_date).to_i &gt; 31
+    # [start_date, end_date]
+  end
+
+  def entities_to_clean(model)
+    if model == 'ALL'
+      cleanup_models = MODELS_TO_PERSIST_IN_ES_FOR_RECYCLE_BIN
+    else
+      raise('Invalid Model') unless MODELS_TO_PERSIST_IN_ES_FOR_RECYCLE_BIN.include?(model)
+      cleanup_models = [model]
+    end
+    cleanup_models
+  end
+
+  def get_deleted_search_condition(model)
+    STATUS_INDEXED_MODELS.include?(model)? "status = #{ENTITY_STATUS[:deleted]}" : "is_deleted = 1"
+  end
+
+  def send_debug_email(exception, params)
+    subject = "TRASHMAN-WORKER-FAILED"
+    trace = 'No stack trace..'
+    content = "Cleanup for deleted records (Recycle Bin) halted. Current Run details - Shard =&gt; #{params[:shard]},
+                Model =&gt; #{params[:model]}, Account-ID for the current run =&gt; #{params[:account_id]}"
+    if exception.present?
+      content += "\nDebug message =&gt; #{exception.message}"
+      trace = exception.backtrace.join("\n")
+    end
+    ApplicationMailer.debug_email(subject, content, trace)
+  end
+# model -&gt; ALL for LCAD
+# specific models -&gt; "Lead", "Contact", "SalesAccount", "Deal"
+# delete_until_time -&gt; the date until which the records should be deleted. i.e. If you want to delete records that are more than one week old  Then give it as  (Time.now.utc.end_of_day - 7.days).to_s(:db)
+ 
+args = { 'account_id' =&gt; "&lt;account_id", 'model' =&gt; "ALL", 'delete_until_time' =&gt; Time.now.utc.end_of_day.to_s(:db), 'replication_delay' =&gt; 5 }
+perform(args)</pre>
+ </div>
+</div><div class="code panel pdl" style="border-width: 1px;">
+ <div class="codeHeader panelHeader pdl hide-border-bottom" style="border-bottom-width: 1px;">
+  <b class="code-title">Subscribe to outlook</b><span class="collapse-source expand-control" style="display:none;"><span class="expand-control-icon icon">&nbsp;</span><span class="expand-control-text">Expand source</span></span><span class="collapse-spinner-wrapper"></span>
+ </div>
+ <div class="codeContent panelContent pdl hide-toolbar">
+  <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: ruby; gutter: true; theme: Confluence; collapse: true" data-theme="Confluence">account_id = &lt;account_id&gt;
+user_id = &lt;user_id&gt;
+OFFICE365_OUTLOOK_USER = 'INTEGRATIONS:OFFICE365:OUTLOOK:USER:%{subscription_id}'.freeze
+OFFICE365_USER = 'INTEGRATIONS:OFFICE365:USER:%{subscription_id}'.freeze
+OUTLOOK_CONTACTS = 'outlook_contacts'.freeze
+PROVIDER = 'office365'.freeze
+APP = 'office365_calendar'.freeze
+def user_credentials
+@user_credential ||=
+ProviderUserConfiguration.find(:first, conditions: { account_id: @current_account.id, user_id: @current_user.id, app_name: (@subscriber_app_name || APP) })
+.try(:application_user_credentials)
+raise_error :not_found unless @user_credential.present?
+return { user_id: @user_credential.configs[:user_id], contactfolder_id: @contact_group } if @subscriber_app_name == OUTLOOK_CONTACTS
+{ calendar_id: @user_credential.configs[:calendar_id], user_id: @user_credential.configs[:user_id] }
+end
+def fetch_query_url(entity, params = {}, id = {})
+app = @subscriber_app_name || APP
+"#{format("#{IntegrationConfig[app]['user']}/#{IntegrationConfig[app][entity]}", user_credentials.merge(id))}?#{URI.encode_www_form params}"
+end
+def generate_client_state
+{
+account_id: @current_account.id,
+user_id: @current_user.id,
+app_name: (@subscriber_app_name || APP)
+}
+end
+def save_client_state(id)
+key = (@subscriber_app_name == OUTLOOK_CONTACTS) ? OFFICE365_OUTLOOK_USER : OFFICE365_USER
+redis_set format(key, subscription_id: id), generate_client_state.to_json
+end
+def redis_set(key, value)
+$redis_integrations.set key, value
+end
+Sharding.select_shard_of(account_id) do
+@current_account = FdMultitenant::Account.find(account_id).make_current
+@current_user = FdMultitenant::User.find(user_id).make_current
+@subscriber_app_name ='office365_calendar'
+events = 'calendar_events'
+fetch_subscription_hash = {
+'NotificationURL' =&gt; format(IntegrationsConfig[PROVIDER]['notification'], app: (@subscriber_app_name || APP)),
+'@odata.type' =&gt; '#Microsoft.OutlookServices.PushSubscription',
+'ChangeType' =&gt; 'Created,Deleted,Updated',
+'Resource' =&gt; fetch_query_url(events)
+}
+configuration = {
+account_id: @current_account.id,
+user_id: @current_user.id,
+app_name: (@subscriber_app_name || APP)
+}
+
+@service = ::Integrations::ServiceUtils.new configuration
+@user_credential =
+ProviderUserConfiguration.find(:first, conditions: { account_id: @current_account.id, user_id: @current_user.id, app_name: APP })
+.try(:application_user_credentials)
+return puts 'not_found' unless @user_credential.present?
+response = @service.post fetch_query_url('subscribe'), fetch_subscription_hash
+return puts "Subscription error: #{HTTP_STATUS[response.code]}, #{response['error']['message']}" unless response.code.eql? 201
+@user_credential.configs[:subscription] = { id: response['Id'], expire: response['SubscriptionExpirationDateTime'] }
+@user_credential.save!
+save_client_state response['Id']
+puts response['Id']
+puts 'success!!'
+end</pre>
+ </div>
+</div><p><br/></p><div class="code panel pdl" style="border-width: 1px;">
+ <div class="codeHeader panelHeader pdl hide-border-bottom" style="border-bottom-width: 1px;">
+  <b class="code-title">Remove field choices</b><span class="collapse-source expand-control" style="display:none;"><span class="expand-control-icon icon">&nbsp;</span><span class="expand-control-text">Expand source</span></span><span class="collapse-spinner-wrapper"></span>
+ </div>
+ <div class="codeContent panelContent pdl hide-toolbar">
+  <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: ruby; gutter: true; theme: Confluence; collapse: true" data-theme="Confluence">def remove_choices_from_field(account_id, model, field_name, choices_to_remove)
+    Sharding.select_shard_of(account_id) do
+      account = FdMultitenant::Account.find(account_id)
+      account.make_current
+      form = account.cached_default_form_for(model)
+      field = form.find_field_by(:name, field_name)
+      return if field.blank?
+
+      choices = field.choices.select { |val| choices_to_remove.include?(val[:value])}
+      return if choices.blank?
+      puts "Choices to delete: #{choices}"
+
+      choices.map do |ch|
+                ch[:_destroy] = true
+      end
+
+      res = form.update_field(field.id, choices: choices, skip_callbacks: true)
+      p "Removed choices from account_id = #{account_id}, on field: name = #{field_name}"
+      account.send("clear_cached_#{model}_forms".to_sym)
+      account.reset_forms_cache_for(model)
+    end
+  end
+
+  # Pass choice_to_remove as an array
+  remove_choices_from_field(1603111299, "deal", "cf_test", ["test1"] )</pre>
+ </div>
+</div><div class="code panel pdl" style="border-width: 1px;">
+ <div class="codeHeader panelHeader pdl hide-border-bottom" style="border-bottom-width: 1px;">
+  <b class="code-title">Download import csv from S3</b><span class="collapse-source expand-control" style="display:none;"><span class="expand-control-icon icon">&nbsp;</span><span class="expand-control-text">Expand source</span></span><span class="collapse-spinner-wrapper"></span>
+ </div>
+ <div class="codeContent panelContent pdl hide-toolbar">
+  <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: ruby; gutter: true; theme: Confluence; collapse: true" data-theme="Confluence">def download_import_url(account_id, import_csv_id)
+    Sharding.admin_select_shard_of(account_id) do
+        current_account = FdMultitenant::Account.find_by_id(account_id)
+        current_account.make_current
+        import_csv = ImportCsv.find_by_id import_csv_id
+        puts import_csv.attachments.first.content.expiring_url
+    end
+end
+
+download_import_url(97008, 4000025984)</pre>
+ </div>
+</div><p><br/></p><div class="code panel pdl" style="border-width: 1px;">
+ <div class="codeHeader panelHeader pdl hide-border-bottom" style="border-bottom-width: 1px;">
+  <b class="code-title">Create Account in RTS(for migrated accounts)</b><span class="collapse-source expand-control" style="display:none;"><span class="expand-control-icon icon">&nbsp;</span><span class="expand-control-text">Expand source</span></span><span class="collapse-spinner-wrapper"></span>
+ </div>
+ <div class="codeContent panelContent pdl hide-toolbar">
+  <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: ruby; gutter: false; theme: Confluence; collapse: true" data-theme="Confluence">account_ids = [1613974269] # change it
+EXPIRE_IN_SECONDS = 3900.freeze
+def request_path(endpoint)
+  IrisNotificationService['rts_host'] + "/#{Rts::Constants::API_VERSION}" + endpoint
+end
+def headers
+  token = JWT.encode({
+                       'appId' =&gt; IrisNotificationService['rts_app_id'],
+                       'exp' =&gt; Time.now.to_i + EXPIRE_IN_SECONDS
+                     }, IrisNotificationService['rts_app_key'], 'HS256')
+  {
+    'Content-Type' =&gt; 'application/json',
+    'token' =&gt; token
+  }
+end
+def create_account_rts(account_ids)
+  failed_accounts = []
+  succeeded_accounts = []
+  account_ids.each do |account_id|
+    Sharding.select_shard_of(account_id) do
+      account = FdMultitenant::Account.find(account_id).make_current
+      request_params = {
+        circuit_breaker_tag: 'RTS_LIVE_UPDATES',
+        type: :post,
+        path: request_path("#{Rts::Constants::REQUEST_PATHS[:account_registration]}/#{IrisNotificationService['rts_app_id']}"),
+        headers: headers,
+        body: {
+          name: account_id,
+          version: Rts::Constants::VERSION_FOR_ACCOUNT_REGISTRATION,
+          desc: account.domain #check whether i should use full domain
+        }
+      }
+      response = UtilityServices::Request.new(request_params).send
+      if response.nil?
+        failed_accounts &lt;&lt; account_id
+        next
+      end
+      response_body = JSON.parse(response.body)
+      rts_config = account.rts_account_configuration
+      rts_config.rts_account_id = response_body['accId']
+      rts_config.rts_account_secret = response_body['key']
+      rts_config.save ? succeeded_accounts &lt;&lt; account_id : failed_accounts &lt;&lt; account_id
+    end
+  end
+  p "Succeeded Accounts: #{succeeded_accounts}"
+  p "Failed Accounts: #{failed_accounts}"
+end
+create_account_rts(account_ids)</pre>
+ </div>
+</div><div class="code panel pdl" style="border-width: 1px;">
+ <div class="codeHeader panelHeader pdl hide-border-bottom" style="border-bottom-width: 1px;">
+  <b class="code-title">Add 'max_field_dependencies_allowed' in account setting config</b><span class="collapse-source expand-control" style="display:none;"><span class="expand-control-icon icon">&nbsp;</span><span class="expand-control-text">Expand source</span></span><span class="collapse-spinner-wrapper"></span>
+ </div>
+ <div class="codeContent panelContent pdl hide-toolbar">
+  <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: ruby; gutter: false; theme: Confluence; collapse: true" data-theme="Confluence">def run(account_id, choice_limit)
+    Sharding.select_shard_of(account_id) do
+    account = FdMultitenant::Account.find_by_id(account_id).make_current
+    as = account.account_setting
+    as.configs = as.configs.merge({"form_meta" =&gt; {"max_field_dependencies_allowed"=&gt;choice_limit}})
+    as.save
+    puts account.account_setting.configs
+  end
+endrun(account_id, choice_limit)</pre>
+ </div>
+</div><div class="code panel pdl" style="border-width: 1px;">
+ <div class="codeHeader panelHeader pdl hide-border-bottom" style="border-bottom-width: 1px;">
+  <b class="code-title">Increase the form field limits</b><span class="collapse-source expand-control" style="display:none;"><span class="expand-control-icon icon">&nbsp;</span><span class="expand-control-text">Expand source</span></span><span class="collapse-spinner-wrapper"></span>
+ </div>
+ <div class="codeContent panelContent pdl hide-toolbar">
+  <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: ruby; gutter: false; theme: Confluence; collapse: true" data-theme="Confluence">def update_configs(account_id)
+  Sharding.select_shard_of(account_id) do
+    account = FdMultitenant::Account.find_by_id(account_id).make_current
+    as = account.account_setting
+    as.configs = as.configs.merge({"form_meta" =&gt; {"field_types_supported"=&gt;{ "text" =&gt; 70 }}})
+    as.save
+    puts account.account_setting.configs
+  end
+end
+
+update_configs(312340)</pre>
+ </div>
+</div><div class="code panel pdl" style="border-width: 1px;">
+ <div class="codeHeader panelHeader pdl hide-border-bottom" style="border-bottom-width: 1px;">
+  <b class="code-title">Retrigger full export </b><span class="collapse-source expand-control" style="display:none;"><span class="expand-control-icon icon">&nbsp;</span><span class="expand-control-text">Expand source</span></span><span class="collapse-spinner-wrapper"></span>
+ </div>
+ <div class="codeContent panelContent pdl hide-toolbar">
+  <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: ruby; gutter: false; theme: Confluence; collapse: true" data-theme="Confluence">account_id = 312340
+user_id = 4000074689 // User initiated the export, can be fetched from export_zips table
+def trigger_full_export(account_id, user_id)
+  Sharding.select_shard_of(account_id) do
+    current_account = FdMultitenant::Account.find_by_id(account_id).make_current
+    current_user = FdMultitenant::User.find_by_id(user_id).make_current
+    export_record = ExportZip.new
+    export_record.export_type = ExportZip::TYPES[:export_data]
+    export_record.save
+    job_id = ExportDataWorker.perform_async(current_account.full_domain_bundle_url, current_user.email, export_record.id)
+    puts job_id
+  end
+end
+
+trigger_full_export(account_id, user_id)</pre>
+ </div>
+</div><p><br/></p><div class="code panel pdl" style="border-width: 1px;">
+ <div class="codeHeader panelHeader pdl hide-border-bottom" style="border-bottom-width: 1px;">
+  <b class="code-title">Delete field in form serv</b><span class="collapse-source expand-control" style="display:none;"><span class="expand-control-icon icon">&nbsp;</span><span class="expand-control-text">Expand source</span></span><span class="collapse-spinner-wrapper"></span>
+ </div>
+ <div class="codeContent panelContent pdl hide-toolbar">
+  <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: ruby; gutter: false; theme: Confluence; collapse: true" data-theme="Confluence">account_id = &lt;account_id&gt;
+field_class = &lt;field_class&gt;
+field_id = &lt;field_id&gt;
+def delete_field(account_id, field_class, field_id)
+  Sharding.select_shard_of(account_id) do
+    account = FdMultitenant::Account.find(account_id).make_current
+    form = account.default_form_for(field_class)
+    puts "Form is present" unless form.nil?
+    field = form.find_field_by(:id, field_id)
+    if field.blank?
+        puts "Field is not present"
+        return
+    else
+      form.delete_field(field.id)
+      puts "Field deleted successfully"
+    end
+	account.reset_forms_cache_for(field_class)
+  end
+end
+delete_field(account_id, field_class, field_id)</pre>
+ </div>
+</div><p>UCR data manipulation :</p><div class="code panel pdl" style="border-width: 1px;">
+ <div class="codeHeader panelHeader pdl hide-border-bottom" style="border-bottom-width: 1px;">
+  <b class="code-title">Get active contacts count in UCR</b><span class="collapse-source expand-control" style="display:none;"><span class="expand-control-icon icon">&nbsp;</span><span class="expand-control-text">Expand source</span></span><span class="collapse-spinner-wrapper"></span>
+ </div>
+ <div class="codeContent panelContent pdl hide-toolbar">
+  <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: ruby; gutter: false; theme: Confluence; collapse: true" data-theme="Confluence">def contacts_count_in_mcr(account_id)
+  token = "#{$mcr_client.client_name} #{JWT.encode({exp: Time.now.to_i + 2.minutes}, MCRConfig[:client_secret], 'HS256')}"
+  Sharding.select_shard_of(account_id) do
+    acc = FdMultitenant::Account.find(account_id).make_current
+    mcr_account_id = acc.cached_account_details[:mcr_account_id]
+    url = "#{MCRConfig[:host]}/v1/connector/#{mcr_account_id}/segmentation/execute?page=1&amp;per_page=10"
+    body = {"entity": {"type": "contact"}, "rule": {"match_type": "all", "condition_sets": [{"match_type": "all", "conditions": [{"name": "status", "evaluate_on": "CONTACT", "operator": "IS", "field_type": "number", "value": 1}]}]}}.to_json
+    headers = {"content-type" =&gt; 'application/json', "x-clienttoken" =&gt; token}
+    response = HTTParty.post(url, headers: headers, body: body)
+    response_data = JSON.parse(response.body)
+    puts "Total active contacts in UCR : #{response_data['meta']['total_number_of_records']}"
+  end
+end
+
+contacts_count_in_mcr 123456</pre>
+ </div>
+</div><div class="code panel pdl" style="border-width: 1px;">
+ <div class="codeHeader panelHeader pdl hide-border-bottom" style="border-bottom-width: 1px;">
+  <b class="code-title">Compute the difference between UCR and FS DB(contacts)</b><span class="collapse-source expand-control" style="display:none;"><span class="expand-control-icon icon">&nbsp;</span><span class="expand-control-text">Expand source</span></span><span class="collapse-spinner-wrapper"></span>
+ </div>
+ <div class="codeContent panelContent pdl hide-toolbar">
+  <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: ruby; gutter: false; theme: Confluence; collapse: true" data-theme="Confluence">## Check for contact count in DB before executing this ##
+def compare_data_with_ucr(account_id)
+  token = "#{$mcr_client.client_name} #{JWT.encode({exp: Time.now.to_i + 3.hours}, MCRConfig[:client_secret], 'HS256')}"
+  diff = []
+  Sharding.select_shard_of(account_id) do
+    acc = FdMultitenant::Account.find(account_id).make_current
+    mcr_account_id = acc.cached_account_details[:mcr_account_id]
+    counter = 0
+    loop do
+      url = "#{MCRConfig[:host]}/v1/connector/#{mcr_account_id}/segmentation/execute?page=#{counter += 1}&amp;per_page=300"
+      body = {"entity": {"type": "contact"}, "rule": {"match_type": "all", "condition_sets": [{"match_type": "all", "conditions": [{"name": "status", "evaluate_on": "CONTACT", "operator": "IS", "field_type": "number", "value": 1}]}]}}.to_json
+      headers = {"content-type" =&gt; 'application/json', "x-clienttoken" =&gt; token}
+      response = HTTParty.post(url, headers: headers, body: body)
+      response_data = JSON.parse(response.body)
+      ids = response_data["entity_ids"]
+      break if ids.blank?
+      fsa_ids = Contact.where(mcr_id: ids).map(&amp;:mcr_id)
+      diff += ids - fsa_ids
+    end
+  end
+  diff
+end
+
+
+delta = compare_data_with_ucr(123456)
+puts delta
+puts delta.count</pre>
+ </div>
+</div><div class="code panel pdl" style="border-width: 1px;">
+ <div class="codeHeader panelHeader pdl hide-border-bottom" style="border-bottom-width: 1px;">
+  <b class="code-title">Compute the difference between FS DB and UCR(contacts)</b><span class="collapse-source expand-control" style="display:none;"><span class="expand-control-icon icon">&nbsp;</span><span class="expand-control-text">Expand source</span></span><span class="collapse-spinner-wrapper"></span>
+ </div>
+ <div class="codeContent panelContent pdl hide-toolbar">
+  <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: ruby; gutter: false; theme: Confluence; collapse: true" data-theme="Confluence">## Check for contact count in DB before executing this (NOTE: Cannot read more than 100 contacts in UCR)##
+def compare_data_with_ucr(account_id)
+  diff = []
+  duplicates_count = 0
+  Sharding.select_shard_of(account_id) do
+    acc = FdMultitenant::Account.find(account_id).make_current
+
+    mcr_account_id = acc.cached_account_details[:mcr_account_id]
+    puts mcr_account_id
+
+    Contact.unscoped.where(account_id: account_id).fsa_find_in_batches(batch_size: 100) do |contacts|
+      mcr_ids = contacts.map(&amp;:mcr_id)
+      diff += mcr_ids - ($mcr_bg_client.retrieve_contacts(mcr_account_id, mcr_ids).result).map(&amp;:id)
+    end
+    duplicates_count = Contact.unscoped.where("account_id = #{account_id}").group('mcr_id').having('count(mcr_id) &gt; 1').count
+  end
+  [diff, duplicates_count]
+end
+
+puts "Delta contacts:"
+delta, dup = compare_data_with_ucr(441834)
+puts delta.compact!
+puts delta.count
+
+puts "Duplicates in FS DB:#{dup.keys.count}"  </pre>
+ </div>
+</div><div class="code panel pdl" style="border-width: 1px;">
+ <div class="codeHeader panelHeader pdl hide-border-bottom" style="border-bottom-width: 1px;">
+  <b class="code-title">Delete stale MCR contacts in UCR</b><span class="collapse-source expand-control" style="display:none;"><span class="expand-control-icon icon">&nbsp;</span><span class="expand-control-text">Expand source</span></span><span class="collapse-spinner-wrapper"></span>
+ </div>
+ <div class="codeContent panelContent pdl hide-toolbar">
+  <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: ruby; gutter: false; theme: Confluence; collapse: true" data-theme="Confluence">account_id = 12345
+mcr_ids = []
+def delete_stale_contacts_in_ucr(account_id, mcr_ids, needs_response = true)
+  Sharding.select_shard_of(account_id) do
+    account = FdMultitenant::Account.find(account_id).make_current
+	mcr_account_id = account.cached_account_details[:mcr_account_id]
+	mcr_ids.each do |mcr_id|
+		$mcr_client.delete_contact(mcr_account_id, mcr_id, { form_version: 0})  
+ 		puts response.inspect if needs_response
+        raise "Delete failed" if response.status != 200
+	end  
+  end
+end 
+delete_stale_contacts_in_ucr(account_id, mcr_ids)</pre>
+ </div>
+</div><p class="auto-cursor-target">open_deals_amount &amp; won_deals_amount mismatch scripts</p><div class="code panel pdl" style="border-width: 1px;">
+ <div class="codeHeader panelHeader pdl hide-border-bottom" style="border-bottom-width: 1px;">
+  <b class="code-title">Recompute the value for deal amount for specified deals</b><span class="collapse-source expand-control" style="display:none;"><span class="expand-control-icon icon">&nbsp;</span><span class="expand-control-text">Expand source</span></span><span class="collapse-spinner-wrapper"></span>
+ </div>
+ <div class="codeContent panelContent pdl hide-toolbar">
+  <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: ruby; gutter: false; theme: Confluence; collapse: true" data-theme="Confluence">account_id = 123456
+Sharding.select_shard_of(account_id) do
+    FdMultitenant::Account.find(account_id).make_current
+    [17001939862, 17002653990].each do |sales_account_id|
+        UpdatePotentialStats.perform_async(SalesAccount.name, sales_account_id)
+    end
+end</pre>
+ </div>
+</div><div class="code panel pdl" style="border-width: 1px;">
+ <div class="codeHeader panelHeader pdl hide-border-bottom" style="border-bottom-width: 1px;">
+  <b class="code-title">Identify the sales accounts which have discrepancy in deal amounts</b><span class="collapse-source expand-control" style="display:none;"><span class="expand-control-icon icon">&nbsp;</span><span class="expand-control-text">Expand source</span></span><span class="collapse-spinner-wrapper"></span>
+ </div>
+ <div class="codeContent panelContent pdl hide-toolbar">
+  <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: ruby; gutter: false; theme: Confluence; collapse: true" data-theme="Confluence">account_id = 402124
+count = 0
+mismatch_accounts = []
+Sharding.select_shard_of(account_id) do
+  current_account = FdMultitenant::Account.find_by_id(account_id).make_current
+  open_deal_stage_ids = current_account.cached_deal_stages.select { |stage| stage[:forecast_type] == DealStage::OPEN_FORECAST }.map { |h| h[:id] }
+  won_deal_stage_ids = current_account.cached_deal_stages.select { |stage| stage[:forecast_type] == DealStage::WON_FORECAST }.map { |h| h[:id] }
+  data = SalesAccount.joins(:deals).group('sales_accounts.id').count('deals.id')
+  puts "count ::: #{data.size}"
+  data.each do |k,v|
+    _won = 0
+    _open = 0
+    sa = SalesAccount.find(k)
+    sa.deals.each do |deal|
+      if won_deal_stage_ids.include?(deal.deal_stage_id)
+        _won += (deal.base_currency_amount).to_f
+      elsif open_deal_stage_ids.include?(deal.deal_stage_id)
+        _open += (deal.base_currency_amount).to_f
+      end
+    end
+    if (sa.open_deals_amount.to_f != _open ||  sa.won_deals_amount.to_f != _won)
+      count = count + 1
+      puts "Mismatch in open/won deal amount for sales account id #{sa.id} -&gt; sa_open_deal: #{sa.open_deals_amount} : computed -&gt; #{_open}
+            -&gt; sa_won_deal: #{sa.won_deals_amount} : computed -&gt; #{_won}"
+      mismatch_accounts &lt;&lt; sa.id
+    end
+  end
+end
+
+puts "accounts which got affected -&gt; #{count} ids : #{mismatch_accounts.uniq}"</pre>
+ </div>
+</div><p class="auto-cursor-target">Fetch data from haystack logs:</p><div class="code panel pdl" style="border-width: 1px;">
+ <div class="codeHeader panelHeader pdl hide-border-bottom" style="border-bottom-width: 1px;">
+  <b class="code-title">Get logs from Haystacks for Contact update</b><span class="collapse-source expand-control" style="display:none;"><span class="expand-control-icon icon">&nbsp;</span><span class="expand-control-text">Expand source</span></span><span class="collapse-spinner-wrapper"></span>
+ </div>
+ <div class="codeContent panelContent pdl hide-toolbar">
+  <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: ruby; gutter: false; theme: Confluence; collapse: true" data-theme="Confluence">def search_logs(contact_ids)
+  t1 = 1656460800
+  t2 = 1656633599
+  count = 1
+  contact_ids.each do |id|
+    begin
+      puts "Processing #{count}"
+      query = "#{id} AND contact_update AND Central Publish request_headers"
+      curl_statement = "curl 'https://logs.haystack.es/elasticsearch/_msearch' \
+      -X 'POST' \
+      -H 'Content-Type: application/x-ndjson' \
+      -H 'Accept: application/json, text/plain, */*' \
+      -H 'Accept-Encoding: gzip, deflate, br' \
+      -H 'Accept-Language: en-gb' \
+      -H 'Host: logs.haystack.es' \
+      -H 'Origin: https://logs.haystack.es' \
+      -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.1.2 Safari/605.1.15' \
+      -H 'Referer: https://logs.haystack.es/app/kibana' \
+      -H 'Content-Length: 630' \
+      -H 'Connection: keep-alive' \
+      -H 'Cookie: HAYSAuthSessionID-0=8j/IUA/damPV3rhxNaFQUk2rXTzrfX95fFkBmXXE/nmVCzGENuLrhR/pTWsDU091Q//838kTvVvw+lnw+R5DZC/27r+uME9L0pAhrZPkeVbN7MWSCVWpmTKe2+M+1uNTHcbD1yBC5Y1il0rUkQywwKGMp9kcoSiMvKXyz0V5Ceevg3VbRqrrBMNzgFrkA9g3aU6aNYqSTDsvEvIQeQGWxQfDv6RNq8EPifO9ZZffoGNfmARfaIyoS5cfNCVNfr2qMNXg8qq/+dXgQVak/NEjcuf41k73OOJ2f01DlruwLcWbs9iHIeEk+MHc7+HpSStVqE/GEF1Vccm3JjePkll1ikS0OWnn2KeX+IU2gRYvWi7Ylqt2fBsx+8vuYd3MeUkgTNIZZ0yv0GdVmg7K1fmSS/e6e/WpA/7fYU8cSk4URhI6pemF9d+3r30jp+dE7BU9HT/yCi/tM4Ganuf4C3139x4mzTurgYXolKTV9bfRqzIq3cTTpi32ggiDHQoR7hCsZTS3lmcHI465sDd07AWIt2BYLoCKQshukepIoYAG8T6kwNeI6h4RupyCAxYz0BHzLyJv80W0GzxHXd5nH8Ddg6FJVWYXDgqAv7KAU1+xdaXpYoYoFR76eLzu2kYaWLa9dWU8z7h0KRia5zL0Ivw4eMnYSRUpUXsMgufA+J3+P/SfIg13I/RK+SHVQ7H5eFP4nMv67j2urTRwi497xRkJkSU6/6+BRr9Zf8gY46Y1doFWIRggZdetKl3q426BJDDVrNvhjJiSGxMUjg/r2e2NP7avSkDoYVyBHieaoQmcc6Ouy1fv04VDVQZB8x5tUyyg3DGECdiacwSES4nOF/HfWDgoBYeefw32FdbNFTteznk0VQY7qXrHJYroBc0OhYKCMCxfoMG7RPVQdAHM1Lvi5cScp9Y+KMM8IV7BdldZXGWMqshtf/L0XZRHK8OWZclmLOPpxcxuTtJCLGzuuL6I9G+6AYJlAWDPY+mqlRK/tGYwNP0mMpByq34BFpUe4T1RCpGWk6CxsVh7GFoR4EM9wHwoHQLMAVx1/ZSFnd7CBJwabXO1yMomehB8d1hsQbBRm6MM95X6ww==; uid=Fe26.2**3f7cc2cd0dfbe55345b8a3a3043aacadec7d832e91356115e54ac23a6f5b8c83*fBEFJxAEJOd4jJTZnDaPqA*fYMUxudpNlc9dp6Pw9WGIsEYZGOjMMhZ8GjzBDSiQosw1EPgdu2U1kbRwcMRCh2e**90d922dd245c3a2404c4093de486ebd3209bf30f6fe6807616ce184a59a8415e*5atVoc2G3mFqsirpnI3AK2E4Ljdzgi4onD-6PttpA2o' \
+      -H 'uid: {\"content\":\"7dec28f37a4f28445bbd6d63fcf03668fb076e79b2ce182f2c692f6c58d37a7e\",\"tag\":\"72e1e4446ac6392bd089d01f71344a73\"}' \
+      -H 'kbn-version: 6.1.5-SNAPSHOT' \
+      --data-binary $'{\"index\":[\"freshsales*\"],\"ignore_unavailable\":true,\"preference\":1657031331638}\n{\"version\":true,\"size\":2000,\"sort\":[{\"@timestamp\":{\"order\":\"desc\",\"unmapped_type\":\"boolean\"}},{\"offset\":{\"order\":\"desc\",\"unmapped_type\":\"boolean\"}}],\"_source\":{\"excludes\":[\"@version\"]},\"stored_fields\":[\"*\"],\"script_fields\":{},\"docvalue_fields\":[\"@timestamp\",\"start_time\"],\"query\":{\"bool\":{\"must\":[{\"query_string\":{\"query\":\"#{query}\",\"default_operator\":\"AND\"}},{\"range\":{\"@timestamp\":{\"gte\":#{t1}000,\"lte\":#{t2}999,\"format\":\"epoch_millis\"}}}],\"filter\":[],\"should\":[],\"must_not\":[]}}}\n' --compressed"
+      res = `#{curl_statement}`
+      JSON.parse(res)["responses"][0]["hits"]["hits"].each do |r|
+        data = JSON.parse(r['_source']['message'].split(' request_body: ')[1])
+        puts data
+      end
+      count += 1
+    rescue Exception =&gt; e
+      puts e.message
+      puts "------- Execution failed for contact #{id} ------"
+    end
+  end
+end</pre>
+ </div>
+</div><p class="auto-cursor-target">Disable auto_recharge of phone_credits for an account:<br/><br/></p><div class="code panel pdl" style="border-width: 1px;">
+ <div class="codeHeader panelHeader pdl hide-border-bottom" style="border-bottom-width: 1px;">
+  <b class="code-title">Disable auto_recharge of phone_credits for an account</b><span class="collapse-source expand-control" style="display:none;"><span class="expand-control-icon icon">&nbsp;</span><span class="expand-control-text">Expand source</span></span><span class="collapse-spinner-wrapper"></span>
+ </div>
+ <div class="codeContent panelContent pdl hide-toolbar">
+  <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: ruby; gutter: false; theme: Confluence; collapse: true" data-theme="Confluence">ACCOUNT_ID = 94516
+
+Sharding.select_shard_of(ACCOUNT_ID) do
+  current_account = FdMultitenant::Account.find(ACCOUNT_ID)&amp;.make_current
+  return if !current_account.present?
+  phone_credit = current_account.phone_credit
+  phone_credit.auto_recharge = false
+  phone_credit.save!
+  key = FsRedis::RedisKeys::PHONE_AUTO_RECHARGE % {account_id: current_account.id}
+  $redis_phone.del(key) if $redis_phone.exists(key)
+end</pre>
+ </div>
+</div><div class="code panel pdl" style="border-width: 1px;">
+ <div class="codeHeader panelHeader pdl hide-border-bottom" style="border-bottom-width: 1px;">
+  <b class="code-title">Check dropdown field behave as autocomplete</b><span class="collapse-source expand-control" style="display:none;"><span class="expand-control-icon icon">&nbsp;</span><span class="expand-control-text">Expand source</span></span><span class="collapse-spinner-wrapper"></span>
+ </div>
+ <div class="codeContent panelContent pdl hide-toolbar">
+  <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: ruby; gutter: false; theme: Confluence; collapse: true" data-theme="Confluence">Sharding.select_shard_of(acc_id) do
+  account = FdMultitenant::Account.find(acc_id).make_current
+  user = account.account_admin.make_current
+
+  @dropdown_as_autocomplete_entity_hash ||= account.dropdown_as_autocomplete_entity_hash
+  entity_fields = @dropdown_as_autocomplete_entity_hash[entity]
+  p entity_fields.present? &amp;&amp; entity_fields.include?(field)
+end</pre>
+ </div>
+</div><div class="code panel pdl" style="border-width: 1px;">
+ <div class="codeHeader panelHeader pdl hide-border-bottom" style="border-bottom-width: 1px;">
+  <b class="code-title">Make default dropdown field behave as autocomplete</b><span class="collapse-source expand-control" style="display:none;"><span class="expand-control-icon icon">&nbsp;</span><span class="expand-control-text">Expand source</span></span><span class="collapse-spinner-wrapper"></span>
+ </div>
+ <div class="codeContent panelContent pdl hide-toolbar">
+  <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: ruby; gutter: false; theme: Confluence; collapse: true" data-theme="Confluence">field_name = 'owner_id'
+
+def generate_field_set_for_entity(entity, field_names)
+  field_set = []
+  entity_form = FdMultitenant::Account.current.default_form_for(entity)
+  field_names.each do |field_name|
+    field = entity_form.find_field_by(:name, field_name)
+    field_set &lt;&lt; field.name if field.present? &amp;&amp; field.field_dependency_configurations.blank?
+  end
+  field_set
+end
+
+
+
+def set_dropdown_as_autocomplete
+  redis_key = format(FsRedis::RedisKeys::DROPDOWN_AS_AUTOCOMPLETE, account_id: FdMultitenant::Account.current.id)
+  entity_fields_mapping = {}
+  field_names = [field_name]
+  FormService::Constants::DEFAULT_FORM_MODELS.each do |entity|
+    entity_fields_mapping[entity] = generate_field_set_for_entity(entity, field_names)
+  end
+  p entity_fields_mapping
+  $redis_restriction.set(redis_key, entity_fields_mapping.to_json)
+  p $redis_restriction.get(redis_key)
+end
+
+Sharding.select_shard_of(acc_id) do
+  account = FdMultitenant::Account.find(acc_id).make_current
+  user = account.account_admin.make_current
+  account.dropdown_as_autocomplete_entity_hash
+  set_dropdown_as_autocomplete
+end</pre>
+ </div>
+</div>

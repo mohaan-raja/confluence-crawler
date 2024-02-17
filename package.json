@@ -1,0 +1,38 @@
+{
+  "name": "confluence-crawler",
+  "version": "1.0.0",
+  "description": "[![Confluence Space / Page Extractor]]",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "mohaan.raja@freshworks.com",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^1.6.7",
+    "commander": "^12.0.0",
+    "fs-extra": "^11.2.0",
+    "image-to-base64": "^2.2.0",
+    "node-fetch": "^2.6.6",
+    "node-pandoc": "^0.3.0"
+  },
+  "directories": {
+    "doc": "docs"
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mohaan-raja/confluence-crawler.git"
+  },
+  "keywords": [
+    "confluence-extraction",
+    "confluence-page-conversion",
+    "confluence-docx-conversion",
+    "confluence-html-conversion",
+    "confluence-conversion-with-images"
+  ],
+  "bugs": {
+    "url": "https://github.com/mohaan-raja/confluence-crawler/issues"
+  },
+  "homepage": "https://github.com/mohaan-raja/confluence-crawler#readme"
+}

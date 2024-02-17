@@ -1,0 +1,35 @@
+<h1>Title: DevOps: Rebalance Mailbox thread across workers</h1><p>Steps to rebalance mailbox threads across workers</p><h2 id="DevOps:RebalanceMailboxthreadacrossworkers-Step-by-stepguide">Step-by-step guide</h2><p><br/></p><ol><li>Boot new worker instance</li><li>Once instance is up, update stack settings with new workers and run &quot;ymlconfigs::default&quot; on worker and rails-app</li><li>Stop sqs poller (rails-app layer) : sqs_polling::stop</li><li>Stop mailbox workers (mailbox layer) : monit::stop</li><li>Login to rails-app instance and run the following rake tasks<br/><ol><li>Get current stats : RAILS_ENV=production bundle exec rake fsrebalance:stats</li><li>Rebalance workers : RAILS_ENV=production bundle exec rake fsrebalance:run</li><li>Get stats after rebalancing : RAILS_ENV=production bundle exec rake fsrebalance:stats</li></ol></li><li>Start mailbox workers (mailbox layer) : monit::restart</li><li>Start sqs poller (rails-app layer) : sqs_polling::restart</li></ol><p> </p><div class="confluence-information-macro confluence-information-macro-information"><span class="aui-icon aui-icon-small aui-iconfont-info confluence-information-macro-icon"></span><div class="confluence-information-macro-body"></div></div><h2 id="DevOps:RebalanceMailboxthreadacrossworkers-Relatedarticles">Related articles</h2><p></p><p>
+
+
+
+
+
+
+
+
+
+
+
+<ul class="content-by-label">
+        <li>
+        <div>
+                <span class="icon aui-icon content-type-page" title="Page">Page:</span>        </div>
+
+        <div class="details">
+                        <a href="/display/freshsales/DevOps%3A+Setting+up+new+DB+shard">DevOps: Setting up new DB shard</a>
+                
+                        
+                    </div>
+    </li>
+        <li>
+        <div>
+                <span class="icon aui-icon content-type-page" title="Page">Page:</span>        </div>
+
+        <div class="details">
+                        <a href="/display/freshsales/DevOps%3A+Rebalance+Mailbox+thread+across+workers">DevOps: Rebalance Mailbox thread across workers</a>
+                
+                        
+                    </div>
+    </li>
+    </ul>
+</p><p><br/></p><p><br/></p>

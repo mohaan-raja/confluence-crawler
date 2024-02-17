@@ -1,0 +1,85 @@
+<h1>Title: DevOps: Setting up new DB shard</h1><div class="contentLayout2">
+<div class="columnLayout single" data-layout="single">
+<div class="cell normal" data-type="normal">
+<div class="innerCell">
+<p>Steps to setup new DB shard</p><h2 id="DevOps:SettingupnewDBshard-Step-by-stepguideInfrasetup">Step-by-step guide<br/><br/>Infra setup</h2><ol><li><span><strong>Copy the parameter group</strong> of the current latest shard and create a new one for master.</span></li><li><span>Replicate the same parameter group for slave</span></li><li><span><span><strong>Create the master and slave DB</strong> instances (slave)</span><br/></span></li><li>Wait for RDS instances to boot and master &amp; slave should be in sync.</li><li>Boot <strong>DR slave</strong>, and change <strong>dr parameter group</strong>, and also set <strong>auto backup<br/></strong> and run this command to <strong>enable cdc</strong> for baikal - <pre>call mysql.rds_set_configuration('binlog retention hours', 10);<br/><br/></pre></li><li><strong>Add DNS</strong> record(CNAME) for master, slave instances and public DNS record for DR slave (baikal slave)</li><li>Test connectivity</li><li><span><span>ADD MySQL users, baikal, nocuser, dbuser, migration, proxysql user (writer, reader),mluser, segmentuser with correct passwords and privileges (compare from other RDSs and get passwords from devops team)<br/><br/>Generate a new password and use it for both mluser and segmentuser<br/>Store the root password for Database in AWS Secret Manager <br/><br/>us-east-1        - freshsales-infra-us<br/>eu-central-1    - freshsales-infra-eu<br/>ap-south-1       - freshsales-infra-in<br/>ap-southeast-2 - freshsales-infra-au</span></span></li></ol><p><br/></p><h2 id="DevOps:SettingupnewDBshard-ProductDBsetup"><span><span>Product DB setup</span></span></h2><ol><li><span style="letter-spacing: 0.0px;">Follow this doc and create a data-migration job with freshsales master branch and your custom fsales-stacks branch,<br/></span>this will create a data migration pod (<a href="https://confluence.freshworks.com/pages/viewpage.action?pageId=324489090">EKS Production - Deployment &amp; Migration Documentation</a><span style="letter-spacing: 0.0px;">)</span></li><li><span style="letter-spacing: 0.0px;">Update config/database.yml with new shard configurations<br/>Add new shard configuration with root user and update the latest shard user to root instead of migration  </span></li><li><span>Verify DB connectivity via mysql client.</span></li><li><span>Run the following command to create the database - <br/><strong>bundle exec rake db:prepare_shard</strong>[&lt;shard_number&gt;] --trace</span></li><li><span><span>Run the following command to seed global data in the shard - <br/><strong>bundle exec rake db:populate_integrations</strong>[&lt;shard_number&gt;] --trace</span></span></li><li><span><span>Update configurations</span></span><ol><li>proxysql-config in AWS secret manager</li><li>create new custom fsales-stacks branch and update db creds in freshsales app &amp; migration and cpq app &amp; migration (ex - <a style="letter-spacing: 0.0px;" href="https://github.com/freshdesk/fsales-stacks/pull/712" class="external-link" rel="nofollow">https://github.com/freshdesk/fsales-stacks/pull/712</a><span style="letter-spacing: 0.0px;">).</span></li></ol></li><li>Perform EKS node rotation so that the proxysql daemonset starts using new configuration -<br/><ol><li>Create new version in launch templates of each node group</li><li>Update launch template version from node group page (Please confirm with team before performing rotation, as this will restart all our pods / data migration jobs)</li></ol></li><li>Verify connectivity using proxysql host and creds from data-migration pods</li><li><span><span>Merge the custom fsales-stacks branch </span></span></li><li><span><span>Add the secrets to FWSS</span></span></li><li><span><span>Perform Deployment in both Freshsales and CPQ</span></span></li><li><span><span>Inform<strong> </strong>the below list of teams about the new shard addition - </span></span><ol><li><span><span>Freddy-Freshales #fsa-freddy</span></span></li><li>Microservice team - Segment &amp; Import #fsa-microservices and tag  <a class="confluence-userlink user-mention" data-username="khushi.singla" href="https://confluence.freshworks.com/display/~khushi.singla" data-linked-resource-id="379656899" data-linked-resource-version="1" data-linked-resource-type="userinfo" data-base-url="https://confluence.freshworks.com">Khushi Singla</a> <a class="confluence-userlink user-mention" data-username="arul.pragasam" href="https://confluence.freshworks.com/display/~arul.pragasam" data-linked-resource-id="369561946" data-linked-resource-version="2" data-linked-resource-type="userinfo" data-base-url="https://confluence.freshworks.com">Arul Pragasam</a> <a class="confluence-userlink user-mention" data-username="prabu.padmanathan" href="https://confluence.freshworks.com/display/~prabu.padmanathan" data-linked-resource-id="230073829" data-linked-resource-version="2" data-linked-resource-type="userinfo" data-base-url="https://confluence.freshworks.com">Prabu Padmanathan</a> <a class="confluence-userlink user-mention" data-username="kiriti.madakasira" href="https://confluence.freshworks.com/display/~kiriti.madakasira" data-linked-resource-id="302105849" data-linked-resource-version="1" data-linked-resource-type="userinfo" data-base-url="https://confluence.freshworks.com">Kiriti Madakasira</a> </li><li>Baikal (raise the below ticket - <a href="https://lighthouse.freshservice.com/support/catalog/items/834" class="external-link" rel="nofollow">https://lighthouse.freshservice.com/support/catalog/items/834</a>)</li><li>Analytics Reconciliation job setup (#analytics-crm-reconciliation)</li></ol></li><li><span><span><span><span><span>Use new data migration pod to create preprovision accounts in the shard -<br/></span></span></span></span></span><p class="c-mrkdwn__pre"><strong>bundle exec rake db:seed_pre_provisioned_accounts[shard_number] --trace<br/>or <br/>Seeding one plan alone</strong></p><pre class="c-mrkdwn__pre">AccountPreProvisioningWorker.new.perform(shard_name: 'shard_11122', type: AccountPreProvisioningWorker::TYPE[:manual], sales_360_plan_wise_limit: {sales360_clc_enterprise: 1})</pre><p class="c-mrkdwn__pre"><strong><br/><br/></strong></p></li><li><strong style="letter-spacing: 0.0px;">Create test account</strong><span style="letter-spacing: 0.0px;"> on new shard :</span><br/><ol><li><span><span><span>add redis key for the domain<br/><span style="color: rgb(0,0,0);">$redis_restriction</span>.<span style="color: rgb(0,0,0);">hset</span>(<span style="color: rgb(135,16,148);">FsRedis</span>::<span style="color: rgb(135,16,148);">RedisKeys</span>::<span style="color: rgb(135,16,148);">SHARD_SELECTIVE_SIGNUP</span>,<span style="color: rgb(6,125,23);">'subdomain'</span>,<span style="color: rgb(6,125,23);">'shard_1'</span>)<br/><span style="color: rgb(0,0,0);">$redis_restriction</span>.<span style="color: rgb(0,0,0);">expire</span>(<span style="color: rgb(135,16,148);">FsRedis</span>::<span style="color: rgb(135,16,148);">RedisKeys</span>::<span style="color: rgb(135,16,148);">SHARD_SELECTIVE_SIGNUP</span>, <span style="color: rgb(23,80,235);">1</span>.<span style="color: rgb(0,0,0);">day</span>)<br/></span></span></span></li><li><pre>Perform signup<br/><br/></pre></li></ol></li><li><span><span><span><span>Once QA gives approval on the new shard account</span></span></span></span></li><li><span style="letter-spacing: 0.0px;">Configure </span><strong style="letter-spacing: 0.0px;">freshping</strong><span style="letter-spacing: 0.0px;"> alert for the shard - </span><a href="https://noc-team.freshping.io/reports?check_id=547082" style="letter-spacing: 0.0px;" class="external-link" rel="nofollow">https://noc-team.freshping.io/reports?check_id=547082</a></li><li><span><span><span><span>Update the &quot;<strong>latest_shard</strong>&quot; value in respective stack settings in fsales-stacks branch (ex - <a href="https://github.com/freshdesk/fsales-stacks/pull/716" class="external-link" rel="nofollow">https://github.com/freshdesk/fsales-stacks/pull/716</a>)</span></span></span></span></li></ol><p>Add index on updated_at column <a href="https://confluence.freshworks.com/pages/viewpage.action?pageId=191635561">DevOps: Adding index on updated_at columns in baikal slave RDS</a></p><p><br/></p></div>
+</div>
+</div>
+<div class="columnLayout single" data-layout="single">
+<div class="cell normal" data-type="normal">
+<div class="innerCell">
+<h2 id="DevOps:SettingupnewDBshard-Step-by-stepguide-EKSDevstacks">Step-by-step guide - EKS Devstacks</h2></div>
+</div>
+</div>
+<div class="columnLayout single" data-layout="single">
+<div class="cell normal" data-type="normal">
+<div class="innerCell">
+<p><br/>    1. update the database.yml in stacksettings file - eg.  <a href="https://github.com/freshdesk/fsales-stacks/commit/eaf3240835190e32413db6e1880257b34ce2224b" class="external-link" rel="nofollow">https://github.com/freshdesk/fsales-stacks/commit/eaf3240835190e32413db6e1880257b34ce2224b</a><br/>    2. Perform fast deploy on the stack<br/>    3. <strong>Update datebase.yml inside pod and create shard</strong><br/>        i. podexec fsales &lt;stackname&gt; eg. podexec fsales i5<br/>        ii. create tmp directory=&gt;   <strong><span style="letter-spacing: 0.0px;">mkdir /data/app/tmp</span></strong></p><p>        iii. vi config/database.yml. <br/>            </p><div class="code panel pdl" style="border-width: 1px;"><div class="codeHeader panelHeader pdl" style="border-bottom-width: 1px;"><b>database.yml</b></div><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: yml; gutter: false; theme: Confluence" data-theme="Confluence">staging:
+  adapter: mysql2
+  encoding: utf8
+  reconnect: true
+  port: 3306
+  host: docker-mysql.civuakczrhjv.us-east-1.rds.amazonaws.com
+  database: e8_master   
+  username: root
+  password: 7c41A#9A3PP4I
+  slave:
+    username: fs_readonly_user
+  shards:
+    shard_1:
+      database: e8_shard1   
+      not_a_shard: false
+      host: docker-mysql.civuakczrhjv.us-east-1.rds.amazonaws.com
+      username: root
+      password: 7c41A#9A3PP4I
+      slave:
+        username: root
+        password: 7c41A#9A3PP4I
+    shard_2:
+      database: e8_shard2       
+      not_a_shard: false
+      host: docker-mysql.civuakczrhjv.us-east-1.rds.amazonaws.com
+      username: root
+      password: 7c41A#9A3PP4I
+      slave:
+        username: root
+        password: 7c41A#9A3PP4I</pre>
+</div></div><p>    <br/>      iv. <span><strong>bundle exec rake db:prepare_shard</strong>[2] --trace (took around 20min)<br/></span>      v. <span><strong>bundle exec rake db:populate_integrations</strong>[2] --trace<br/></span>   4. perform fast_deploy in eks stack<br/><br/>   5. <strong style="letter-spacing: 0.0px;">Create test account</strong><span style="letter-spacing: 0.0px;"> on new shard :<br/></span></p><ul><li><span>podexec fsales &lt;stackname&gt;<br/></span></li><li><span>bundle exec rails c</span></li><li><span>add redis key for the domain</span><pre><span style="color: rgb(0,0,0);">$redis_restriction</span>.<span style="color: rgb(0,0,0);">hset</span>(<span style="color: rgb(135,16,148);">FsRedis</span>::<span style="color: rgb(135,16,148);">RedisKeys</span>::<span style="color: rgb(135,16,148);">SHARD_SELECTIVE_SIGNUP</span>,<span style="color: rgb(6,125,23);">'subdomain'</span>,<span style="color: rgb(6,125,23);">'shard_2'</span>)<br/><span style="color: rgb(0,0,0);">$redis_restriction</span>.<span style="color: rgb(0,0,0);">expire</span>(<span style="color: rgb(135,16,148);">FsRedis</span>::<span style="color: rgb(135,16,148);">RedisKeys</span>::<span style="color: rgb(135,16,148);">SHARD_SELECTIVE_SIGNUP</span>, <span style="color: rgb(23,80,235);">1</span>.<span style="color: rgb(0,0,0);">day</span>)</pre></li><li><pre>make a signup</pre></li></ul><p><br/><br/><br/></p><h2 id="DevOps:SettingupnewDBshard-Relatedarticles">Related articles</h2><p></p><p>
+
+
+
+
+
+
+
+
+
+
+
+<ul class="content-by-label">
+        <li>
+        <div>
+                <span class="icon aui-icon content-type-page" title="Page">Page:</span>        </div>
+
+        <div class="details">
+                        <a href="/display/freshsales/DevOps%3A+Setting+up+new+DB+shard">DevOps: Setting up new DB shard</a>
+                
+                        
+                    </div>
+    </li>
+        <li>
+        <div>
+                <span class="icon aui-icon content-type-page" title="Page">Page:</span>        </div>
+
+        <div class="details">
+                        <a href="/display/freshsales/DevOps%3A+Rebalance+Mailbox+thread+across+workers">DevOps: Rebalance Mailbox thread across workers</a>
+                
+                        
+                    </div>
+    </li>
+    </ul>
+</p></div>
+</div>
+</div>
+</div>

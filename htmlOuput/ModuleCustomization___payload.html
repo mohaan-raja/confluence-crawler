@@ -1,0 +1,256 @@
+<h1>Title: ModuleCustomization - payload</h1><div class="code panel pdl" style="border-width: 1px;">
+ <div class="codeHeader panelHeader pdl hide-border-bottom" style="border-bottom-width: 1px;">
+  <b class="code-title">ModuleCustomization - create</b><span class="collapse-source expand-control" style="display:none;"><span class="expand-control-icon icon">&nbsp;</span><span class="expand-control-text">Expand source</span></span><span class="collapse-spinner-wrapper"></span>
+ </div>
+ <div class="codeContent panelContent pdl hide-toolbar">
+  <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: actionscript3; gutter: false; theme: Confluence; collapse: true" data-theme="Confluence">{
+  "account_id": "1584954250",
+  "organisation_id": "",
+  "pod": "useast1-pod1",
+  "region": "us-east-1",
+  "payload_type": "module_customization_create",
+  "payload_version": "2.0",
+  "payload": {
+    "model": "ModuleCustomization",
+    "actor": {
+      "id": 3,
+      "name": "prakash-thiya",
+      "email": "prakashthiya@gmail.com",
+      "job_title": null,
+      "work_number": null,
+      "mobile_number": "",
+      "language": "en",
+      "time_zone": "Midway Island",
+      "is_active": true,
+      "deal_pipeline_id": 2,
+      "is_forgotten": false,
+      "created_at": "2020-03-23T09:04:10Z",
+      "updated_at": "2020-03-23T09:04:10Z",
+      "uuid": "3852265f-f36f-c064-d014-8edcd045c634",
+      "type": "user"
+    },
+    "action": "create",
+    "action_epoch": 1588573138.397125,
+    "uuid": "23a101fa8dcf11ea9c65645aede8d797",
+    "account_full_domain": "2020.freshsales-dev.com",
+    "event_timestamp": "2020-05-04T06:18:58.397Z",
+    "product_push_timestamp": "2020-05-04T06:18:58.837Z",
+    "mcr_account_id": "",
+    "event_info": {
+      "ip_address": "127.0.0.1"
+    },
+    "model_properties": {
+      "id": 30,
+      "entity_name": "cm_candidate",
+      "renaming_customizations": [],
+      "custom": true,
+      "singular_name": "Candidate",
+      "plural_name": "Candidates",
+      "table_name": "custom_module2",
+      "creator_id": 3,
+      "updater_id": null,
+      "created_at": "2020-05-04T06:18:57Z",
+      "updated_at": "2020-05-04T06:18:57Z"
+    },
+    "associations": {
+      "creator": {
+        "id": 3,
+        "name": "prakash-thiya",
+        "type": "user",
+        "email": "prakashthiya@gmail.com",
+        "is_active": true,
+        "work_number": null,
+        "mobile_number": "",
+        "time_zone": "Midway Island",
+        "created_at": "2020-03-23T09:04:10Z",
+        "updated_at": "2020-03-23T09:04:10Z",
+        "deal_pipeline_id": 2,
+        "job_title": null,
+        "uuid": "3852265f-f36f-c064-d014-8edcd045c634"
+      },
+      "updater": null
+    }
+  }
+}</pre>
+ </div>
+</div><div class="code panel pdl" style="border-width: 1px;">
+ <div class="codeHeader panelHeader pdl hide-border-bottom" style="border-bottom-width: 1px;">
+  <b class="code-title">ModuleCustomization - update</b><span class="collapse-source expand-control" style="display:none;"><span class="expand-control-icon icon">&nbsp;</span><span class="expand-control-text">Expand source</span></span><span class="collapse-spinner-wrapper"></span>
+ </div>
+ <div class="codeContent panelContent pdl hide-toolbar">
+  <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: actionscript3; gutter: false; theme: Confluence; collapse: true" data-theme="Confluence">{
+  "account_id": "1584954250",
+  "organisation_id": "",
+  "pod": "useast1-pod1",
+  "region": "us-east-1",
+  "payload_type": "module_customization_update",
+  "payload_version": "2.0",
+  "payload": {
+    "model": "ModuleCustomization",
+    "actor": {
+      "id": 3,
+      "name": "prakash-thiya",
+      "email": "prakashthiya@gmail.com",
+      "job_title": null,
+      "work_number": null,
+      "mobile_number": "",
+      "language": "en",
+      "time_zone": "Midway Island",
+      "is_active": true,
+      "deal_pipeline_id": 2,
+      "is_forgotten": false,
+      "created_at": "2020-03-23T09:04:10Z",
+      "updated_at": "2020-03-23T09:04:10Z",
+      "uuid": "3852265f-f36f-c064-d014-8edcd045c634",
+      "type": "user"
+    },
+    "action": "update",
+    "action_epoch": 1588573303.643496,
+    "uuid": "8623635e8dcf11ea9c65645aede8d797",
+    "account_full_domain": "2020.freshsales-dev.com",
+    "event_timestamp": "2020-05-04T06:21:43.643Z",
+    "product_push_timestamp": "2020-05-04T06:21:43.669Z",
+    "mcr_account_id": "",
+    "event_info": {
+      "ip_address": "127.0.0.1"
+    },
+    "model_properties": {
+      "id": 30,
+      "entity_name": "cm_candidate",
+      "renaming_customizations": [
+        {
+          "singular": "Applicant",
+          "plural": "Applicants",
+          "language": "en"
+        },
+        {
+          "singular": "申请人",
+          "plural": "申请者",
+          "language": "zh-CN"
+        }
+      ],
+      "custom": true,
+      "singular_name": "Candidate",
+      "plural_name": "Candidates",
+      "table_name": "custom_module2",
+      "creator_id": 3,
+      "updater_id": 3,
+      "created_at": "2020-05-04T06:18:57Z",
+      "updated_at": "2020-05-04T06:21:43Z"
+    },
+    "associations": {
+      "creator": {
+        "id": 3,
+        "name": "prakash-thiya",
+        "type": "user",
+        "email": "prakashthiya@gmail.com",
+        "is_active": true,
+        "work_number": null,
+        "mobile_number": "",
+        "time_zone": "Midway Island",
+        "created_at": "2020-03-23T09:04:10Z",
+        "updated_at": "2020-03-23T09:04:10Z",
+        "deal_pipeline_id": 2,
+        "job_title": null,
+        "uuid": "3852265f-f36f-c064-d014-8edcd045c634"
+      },
+      "updater": {
+        "id": 3,
+        "name": "prakash-thiya",
+        "type": "user",
+        "email": "prakashthiya@gmail.com",
+        "is_active": true,
+        "work_number": null,
+        "mobile_number": "",
+        "time_zone": "Midway Island",
+        "created_at": "2020-03-23T09:04:10Z",
+        "updated_at": "2020-03-23T09:04:10Z",
+        "deal_pipeline_id": 2,
+        "job_title": null,
+        "uuid": "3852265f-f36f-c064-d014-8edcd045c634"
+      }
+    },
+    "changes": {
+      "model_changes": {
+        "updater_id": [
+          null,
+          3
+        ],
+        "updated_at": [
+          "2020-05-04T06:18:57Z",
+          "2020-05-04T06:21:43Z"
+        ],
+        "renaming_customizations": {
+          "added": [
+            {
+              "singular": "Applicant",
+              "plural": "Applicants",
+              "language": "en"
+            },
+            {
+              "singular": "申请人",
+              "plural": "申请者",
+              "language": "zh-CN"
+            }
+          ]
+        }
+      },
+      "system_changes": {},
+      "misc_changes": {}
+    }
+  }
+}</pre>
+ </div>
+</div><div class="code panel pdl" style="border-width: 1px;">
+ <div class="codeHeader panelHeader pdl hide-border-bottom" style="border-bottom-width: 1px;">
+  <b class="code-title">ModuleCustomization - destroy</b><span class="collapse-source expand-control" style="display:none;"><span class="expand-control-icon icon">&nbsp;</span><span class="expand-control-text">Expand source</span></span><span class="collapse-spinner-wrapper"></span>
+ </div>
+ <div class="codeContent panelContent pdl hide-toolbar">
+  <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: actionscript3; gutter: false; theme: Confluence; collapse: true" data-theme="Confluence">{
+  "account_id": "1584954250",
+  "organisation_id": "",
+  "pod": "useast1-pod1",
+  "region": "us-east-1",
+  "payload_type": "module_customization_destroy",
+  "payload_version": "2.0",
+  "payload": {
+    "model": "ModuleCustomization",
+    "actor": {
+      "id": 3,
+      "name": "prakash-thiya",
+      "email": "prakashthiya@gmail.com",
+      "job_title": null,
+      "work_number": null,
+      "mobile_number": "",
+      "language": "en",
+      "time_zone": "Midway Island",
+      "is_active": true,
+      "deal_pipeline_id": 2,
+      "is_forgotten": false,
+      "created_at": "2020-03-23T09:04:10Z",
+      "updated_at": "2020-03-23T09:04:10Z",
+      "uuid": "3852265f-f36f-c064-d014-8edcd045c634",
+      "type": "user"
+    },
+    "action": "destroy",
+    "action_epoch": 1588573407.0683808,
+    "uuid": "c3c8c65e8dcf11eab250645aede8d797",
+    "account_full_domain": "2020.freshsales-dev.com",
+    "event_timestamp": "2020-05-04T06:23:27.068Z",
+    "product_push_timestamp": "2020-05-04T06:23:27.101Z",
+    "mcr_account_id": "",
+    "event_info": {
+      "ip_address": null
+    },
+    "model_properties": {
+      "id": 30,
+      "languages": [
+        "en",
+        "zh-CN"
+      ],
+      "entity_name": "cm_candidate"
+    }
+  }
+}</pre>
+ </div>
+</div>

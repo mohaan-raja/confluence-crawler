@@ -1,0 +1,28 @@
+<h1>Title: Attachment Storage API - Email Parsing Contract</h1><p class="auto-cursor-target"><strong>Email meta Request</strong></p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: yml; gutter: true; theme: Midnight" data-theme="Midnight">{
+        from: ,
+        to: ,
+        cc: ,
+        bcc: ,
+        recipient: ,
+        envelope_to: [],
+        from_email: [],
+        subject: ,
+        message_id: ,
+        references: ,
+        x_forwarded_for: X-Forwarded-For|| &#39;Resent-From&#39;,
+        delivered_to: &#39;Delivered-To&#39;,
+        date: ,
+        in_reply_to: ,
+        mailbox_id: &#39;mailbox_id&#39;,
+        direction: ,
+        flags: ,
+		identifier: Get span tag title starts with &quot;fs_association_identifier&quot; from email html content &lt;span title=&quot;fs_association_identifier.1a23.4b56.7c89&quot; ......./&gt;
+}//All existing Headers like Recipients, Date, Subject, etc.
+   </pre>
+</div></div><p class="auto-cursor-target"><strong>Email meta Response from Freshsales</strong></p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: yml; gutter: true; theme: Midnight" data-theme="Midnight">{
+   status: accepted/rejected,
+   attachments_base_paths: [&quot;s3://bucket/a_id/email/u_id&quot;, ...]
+}</pre>
+</div></div>

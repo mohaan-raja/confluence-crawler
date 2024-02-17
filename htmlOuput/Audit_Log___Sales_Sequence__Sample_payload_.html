@@ -1,0 +1,675 @@
+<h1>Title: Audit Log - Sales Sequence (Sample payload)</h1><p><strong>Sales Sequence Create:</strong></p><p>Track the payload type sales_sequence_create.</p><p><strong>Sample payload:</strong></p><div class="code panel pdl" style="border-width: 1px;">
+ <div class="codeHeader panelHeader pdl hide-border-bottom" style="border-bottom-width: 1px;">
+  <b class="code-title">Sales Sequence Create Payload</b><span class="collapse-source expand-control" style="display:none;"><span class="expand-control-icon icon">&nbsp;</span><span class="expand-control-text">Expand source</span></span><span class="collapse-spinner-wrapper"></span>
+ </div>
+ <div class="codeContent panelContent pdl hide-toolbar">
+  <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: ruby; gutter: false; theme: Confluence; collapse: true" data-theme="Confluence">{
+  "account_id": "1551267426",
+  "pod": "useast1-pod1",
+  "region": "us-east-1",
+  "payload_type": "sales_sequence_create",
+  "payload_version": "1.1",
+  "payload": {
+    "model": "SalesSequence",
+    "actor": {
+      "id": 2,
+      "name": "mudhabir",
+      "type": "user",
+      "email": "mudhabir.ahmed@freshworks.com",
+      "is_active": true,
+      "work_number": "",
+      "mobile_number": null,
+      "time_zone": "UTC",
+      "created_at": "2019-02-27T11:37:06Z",
+      "updated_at": "2019-03-04T08:16:39Z",
+      "deal_pipeline_id": 2,
+      "job_title": null
+    },
+    "action": "create",
+    "action_epoch": 1552385256.007473,
+    "uuid": "a8e4c46644ae11e9a19d1c36bbed8e69",
+    "account_full_domain": "localhost2.freshsales-dev.com",
+    "event_timestamp": "2019-03-12T10:07:36Z",
+    "product_push_timestamp": "2019-03-12T10:07:36Z",
+    "custom_model": {
+      "singular": null,
+      "plural": null
+    },
+    "event_info": {
+      "ip_address": "127.0.0.1"
+    },
+    "model_properties": {
+      "id": 18,
+      "account_id": 1551267426,
+      "name": "New Campaign",
+      "category": "Lead",
+      "entry_conditions": {
+        "filter_options": {
+          "logic_type": "simple",
+          "simple_logic_operator": "AND",
+          "logic": "",
+          "filter_rules": [
+            {
+              "model": "Lead",
+              "value": [
+                2
+              ],
+              "type": 1,
+              "operator": "is_in",
+              "attribute": "owner_id"
+            }
+          ]
+        },
+        "exclude_duplicate": false,
+        "include_all_contacts": false,
+        "updated_at": "2019-03-12T10:07:35Z"
+      },
+      "exit_conditions": {
+        "filter_options": {
+          "logic_type": "simple",
+          "simple_logic_operator": "OR",
+          "logic": "",
+          "filter_rules": [
+            {
+              "model": "Lead",
+              "value": true,
+              "type": 1,
+              "operator": "is",
+              "attribute": "do_not_disturb"
+            },
+            {
+              "model": "Lead",
+              "value": [
+                1
+              ],
+              "type": 1,
+              "operator": "is_not_in",
+              "attribute": "email_status"
+            }
+          ]
+        }
+      },
+      "status": "active",
+      "last_ran_at": null,
+      "creater_id": 2,
+      "updater_id": null,
+      "created_at": "2019-03-12T10:07:35Z",
+      "updated_at": "2019-03-12T10:07:35Z",
+      "status_changed_at": "2019-03-12T10:07:35Z"
+    },
+    "associations": {
+      "creator": {
+        "id": 2,
+        "name": "mudhabir",
+        "type": "user",
+        "email": "mudhabir.ahmed@freshworks.com",
+        "is_active": true,
+        "work_number": "",
+        "mobile_number": null,
+        "time_zone": "UTC",
+        "created_at": "2019-02-27T11:37:06Z",
+        "updated_at": "2019-03-04T08:16:39Z",
+        "deal_pipeline_id": 2,
+        "job_title": null
+      },
+      "updater": null,
+      "sales_sequence_steps": [
+        {
+          "id": 95,
+          "action_type": "Email",
+          "conditions": {
+            "filter_options": {
+              "logic_type": "simple",
+              "simple_logic_operator": "AND",
+              "logic": "",
+              "filter_rules": [
+                {
+                  "model": "Lead",
+                  "value": [
+                    17
+                  ],
+                  "type": 1,
+                  "operator": "is_in",
+                  "attribute": "lead_source_id"
+                }
+              ]
+            }
+          },
+          "entity_params": {
+            "model": "Lead",
+            "template_id": "2",
+            "needs_tracking": 1,
+            "unsubscribe": 1,
+            "signature": 1,
+            "from": [
+              {
+                "targetable_id": "2",
+                "targetable_type": "User",
+                "text": "mudhabir",
+                "email": "mudhabir.ahmed@freshworks.com"
+              }
+            ],
+            "reply_to": [
+              {
+                "text": "mudhabir+2@localhost2.freshsales-dev.com",
+                "targetable_id": "_user_sales_email_",
+                "targetable_type": "_user_sales_email_",
+                "email": "mudhabir+2@localhost2.freshsales-dev.com"
+              }
+            ],
+            "cc": null,
+            "bcc": null,
+            "new_email": 1,
+            "template_name": "test",
+            "template_subject": null,
+            "execution_day": 1
+          },
+          "position": 1,
+          "created_at": "2019-03-12T10:07:35Z",
+          "updated_at": "2019-03-12T10:07:35Z"
+        }
+      ]
+    }
+  }
+}</pre>
+ </div>
+</div><p><strong>Sales Sequence Update:</strong></p><p>Track the payload type sales_sequence_update.</p><p>The message[&quot;payload&quot;][&quot;<span style="color: rgb(0,51,102);">changes</span>&quot;][&quot;model_changes&quot;] should have one of the following keys:</p><ul><li>name</li><li>status</li><li>entry_conditions</li><li>exit_conditions</li><li>sales_sequence_steps_changes</li><li>campaign_type</li></ul><p><strong>Sample payload</strong></p><div class="code panel pdl" style="border-width: 1px;">
+ <div class="codeHeader panelHeader pdl hide-border-bottom" style="border-bottom-width: 1px;">
+  <b class="code-title">Sales Sequence Update Payload</b><span class="collapse-source expand-control" style="display:none;"><span class="expand-control-icon icon">&nbsp;</span><span class="expand-control-text">Expand source</span></span><span class="collapse-spinner-wrapper"></span>
+ </div>
+ <div class="codeContent panelContent pdl hide-toolbar">
+  <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: ruby; gutter: false; theme: Confluence; collapse: true" data-theme="Confluence">{
+  "account_id": "1551267426",
+  "pod": "useast1-pod1",
+  "region": "us-east-1",
+  "payload_type": "sales_sequence_update",
+  "payload_version": "1.1",
+  "payload": {
+    "model": "SalesSequence",
+    "actor": {
+      "id": 2,
+      "name": "mudhabir",
+      "type": "user",
+      "email": "mudhabir.ahmed@freshworks.com",
+      "is_active": true,
+      "work_number": "",
+      "mobile_number": null,
+      "time_zone": "UTC",
+      "created_at": "2019-02-27T11:37:06Z",
+      "updated_at": "2019-03-04T08:16:39Z",
+      "deal_pipeline_id": 2,
+      "job_title": null
+    },
+    "action": "update",
+    "action_epoch": 1551773588.473513,
+    "uuid": "82a200423f1e11e991d51c36bbed8e69",
+    "account_full_domain": "localhost2.freshsales-dev.com",
+    "event_timestamp": "2019-03-05T08:13:08Z",
+    "product_push_timestamp": "2019-03-05T08:13:08Z",
+    "custom_model": {
+      "singular": null,
+      "plural": null
+    },
+    "event_info": {
+      "ip_address": "127.0.0.1"
+    },
+    "model_properties": {
+      "id": 16,
+      "account_id": 1551267426,
+      "name": "New Campaign545",
+      "category": "Lead",
+      "entry_conditions": {
+        "filter_options": {
+          "logic_type": "simple",
+          "simple_logic_operator": "AND",
+          "logic": "",
+          "filter_rules": [
+            {
+              "model": "Lead",
+              "value": [
+                17,
+                16
+              ],
+              "type": 1,
+              "operator": "is_in",
+              "attribute": "lead_source_id"
+            },
+            {
+              "model": "Lead",
+              "value": [
+                4
+              ],
+              "type": 1,
+              "operator": "is_in",
+              "attribute": "lead_reason_id"
+            }
+          ]
+        },
+        "exclude_duplicate": false,
+        "updated_at": "2019-03-05T08:13:08Z"
+      },
+      "exit_conditions": {
+        "filter_options": {
+          "logic_type": "simple",
+          "simple_logic_operator": "OR",
+          "logic": "",
+          "filter_rules": [
+            {
+              "model": "Lead",
+              "value": false,
+              "type": 1,
+              "operator": "is",
+              "attribute": "do_not_disturb"
+            },
+            {
+              "model": "Lead",
+              "value": [
+                6
+              ],
+              "type": 1,
+              "operator": "is_in",
+              "attribute": "lead_reason_id"
+            }
+          ]
+        }
+      },
+      "status": "active",
+      "last_ran_at": "2019-03-04T11:02:10Z",
+      "creater_id": 2,
+      "updater_id": 2,
+      "created_at": "2019-02-28T07:43:55Z",
+      "updated_at": "2019-03-05T08:13:08Z",
+      "status_changed_at": "2019-03-05T08:13:08Z"
+    },
+    "associations": {
+      "creator": {
+        "id": 2,
+        "name": "mudhabir",
+        "type": "user",
+        "email": "mudhabir.ahmed@freshworks.com",
+        "is_active": true,
+        "work_number": "",
+        "mobile_number": null,
+        "time_zone": "UTC",
+        "created_at": "2019-02-27T11:37:06Z",
+        "updated_at": "2019-03-04T08:16:39Z",
+        "deal_pipeline_id": 2,
+        "job_title": null
+      },
+      "updater": {
+        "id": 2,
+        "name": "mudhabir",
+        "type": "user",
+        "email": "mudhabir.ahmed@freshworks.com",
+        "is_active": true,
+        "work_number": "",
+        "mobile_number": null,
+        "time_zone": "UTC",
+        "created_at": "2019-02-27T11:37:06Z",
+        "updated_at": "2019-03-04T08:16:39Z",
+        "deal_pipeline_id": 2,
+        "job_title": null
+      },
+      "sales_sequence_steps": [
+        {
+          "id": 81,
+          "action_type": "Email",
+          "conditions": {
+            "filter_options": {
+              "logic_type": "simple",
+              "simple_logic_operator": "AND",
+              "logic": "",
+              "filter_rules": null
+            }
+          },
+          "entity_params": {
+            "model": "Lead",
+            "template_id": "2",
+            "needs_tracking": 1,
+            "unsubscribe": 1,
+            "signature": 1,
+            "from": [
+              {
+                "targetable_id": "2",
+                "targetable_type": "User",
+                "text": "mudhabir",
+                "email": "mudhabir.ahmed@freshworks.com"
+              }
+            ],
+            "reply_to": [
+              {
+                "text": "mudhabir+2@localhost2.freshsales-dev.com",
+                "targetable_id": "_user_sales_email_",
+                "targetable_type": "_user_sales_email_",
+                "email": "mudhabir+2@localhost2.freshsales-dev.com"
+              }
+            ],
+            "cc": [
+              {
+                "targetable_id": "2",
+                "targetable_type": "User",
+                "text": "mudhabir"
+              }
+            ],
+            "bcc": null,
+            "new_email": 1,
+            "template_name": "test",
+            "template_subject": null,
+            "execution_day": 1
+          },
+          "position": 1,
+          "created_at": "2019-03-01T06:40:03Z",
+          "updated_at": "2019-03-05T08:13:08Z"
+        },
+        {
+          "id": 84,
+          "action_type": "Followup",
+          "conditions": {
+            "filter_options": {
+              "logic_type": "simple",
+              "simple_logic_operator": "AND",
+              "logic": "",
+              "filter_rules": [
+                {
+                  "model": "EmailActivity",
+                  "value": null,
+                  "type": 1,
+                  "operator": "if_replied",
+                  "attribute": "1"
+                }
+              ]
+            }
+          },
+          "entity_params": {
+            "model": "Lead",
+            "title": "Follow up 22",
+            "owner": "2",
+            "due_date": {
+              "time": "08:29"
+            },
+            "execution_day": 1
+          },
+          "position": 2,
+          "created_at": "2019-03-05T08:13:08Z",
+          "updated_at": "2019-03-05T08:13:08Z"
+        }
+      ]
+    },
+    "changes": {
+      "model_changes": {
+        "frequency": [
+          5,
+          6
+        ],
+        "interval_hour": [
+          16,
+          17
+        ],
+        "interval_min": [
+          29,
+          0
+        ],
+        "entry_conditions": [
+          {
+            "filter_options": {
+              "logic_type": "simple",
+              "simple_logic_operator": "AND",
+              "logic": "",
+              "filter_rules": [
+                {
+                  "model": "Lead",
+                  "value": [
+                    2
+                  ],
+                  "type": 1,
+                  "operator": "is_in",
+                  "attribute": "owner_id"
+                },
+                {
+                  "model": "Lead",
+                  "value": [
+                    17
+                  ],
+                  "type": 1,
+                  "operator": "is_in",
+                  "attribute": "lead_source_id"
+                }
+              ]
+            },
+            "exclude_duplicate": false,
+            "updated_at": "2019-02-28T14:42:09Z"
+          },
+          {
+            "filter_options": {
+              "logic_type": "simple",
+              "simple_logic_operator": "AND",
+              "logic": "",
+              "filter_rules": [
+                {
+                  "model": "Lead",
+                  "value": [
+                    17,
+                    16
+                  ],
+                  "type": 1,
+                  "operator": "is_in",
+                  "attribute": "lead_source_id"
+                },
+                {
+                  "model": "Lead",
+                  "value": [
+                    4
+                  ],
+                  "type": 1,
+                  "operator": "is_in",
+                  "attribute": "lead_reason_id"
+                }
+              ]
+            },
+            "exclude_duplicate": false,
+            "updated_at": "2019-03-05T08:13:08Z"
+          }
+        ],
+        "status_changed_at": [
+          "2019-03-05T08:11:44Z",
+          "2019-03-05T08:13:08Z"
+        ],
+        "updated_at": [
+          "2019-03-05T08:11:44Z",
+          "2019-03-05T08:13:08Z"
+        ],
+        "campaign_type": [
+          {
+            "time": "16:29",
+            "Time zone": "(GMT+05:30) Chennai",
+            "Exclude weekend": "Yes",
+            "model": "Smart Campaign",
+            "time interval": "a day"
+          },
+          {
+            "time": "17:0",
+            "Time zone": "(GMT+05:30) Chennai",
+            "Exclude weekend": "Yes",
+            "model": "Classic Campaign"
+          }
+        ],
+        "entry_condition_updated": {
+          "removed": [
+            {
+              "model": "lead property",
+              "operator": "is in",
+              "value": [
+                "Email"
+              ],
+              "attribute": "Source"
+            }
+          ],
+          "added": [
+            {
+              "model": "lead property",
+              "operator": "is in",
+              "value": [
+                "Email",
+                "Organic Search"
+              ],
+              "attribute": "Source"
+            }
+          ]
+        },
+        "entry_condition_added": [
+          {
+            "model": "lead property",
+            "operator": "is in",
+            "value": [
+              "Junk Lead"
+            ],
+            "attribute": "Unqualified reason"
+          }
+        ],
+        "entry_condition_removed": [
+          {
+            "model": "lead property",
+            "operator": "is in",
+            "value": [
+              "mudhabir"
+            ],
+            "attribute": "Owner"
+          }
+        ],
+        "sales_sequence_steps_changes": [
+          {
+            "step_action_updated": {
+              "added": [],
+              "removed": []
+            },
+            "step_action_removed": [
+              {
+                "Title": "Follow up 5",
+                "owner": "mudhabir",
+                "Time": "19:00",
+                "Day": 3
+              }
+            ],
+            "step_action_added": [],
+            "steps_condition_operator": [
+              "AND",
+              null
+            ],
+            "steps_condition_updated": {
+              "removed": [],
+              "added": []
+            },
+            "steps_condition_added": [],
+            "steps_condition_removed": [
+              {
+                "model": "lead property",
+                "operator": "is in",
+                "value": [
+                  "Web",
+                  "Organic Search"
+                ],
+                "attribute": "Source"
+              }
+            ],
+            "id": 78,
+            "model": "Add follow up",
+            "step": [
+              1,
+              null
+            ]
+          },
+          {
+            "step_action_updated": {
+              "added": [
+                {
+                  "cc": [
+                    "mudhabir"
+                  ],
+                  "bcc": [],
+                  "Choose an email template": "test",
+                  "How do you want to see this email?": "Start a new thread",
+                  "from": [
+                    "mudhabir"
+                  ],
+                  "reply to": [
+                    "mudhabir+2@localhost2.freshsales-dev.com"
+                  ],
+                  "Include link to Unsubscribe": "Yes",
+                  "Track opens and clicks": "Yes",
+                  "Include email signature": "Yes",
+                  "Day": 1
+                }
+              ],
+              "removed": [
+                {
+                  "cc": [],
+                  "bcc": [],
+                  "Choose an email template": "test",
+                  "How do you want to see this email?": "Start a new thread",
+                  "from": [
+                    "mudhabir"
+                  ],
+                  "reply to": [
+                    "mudhabir+2@localhost2.freshsales-dev.com"
+                  ],
+                  "Include link to Unsubscribe": "Yes",
+                  "Track opens and clicks": "Yes",
+                  "Include email signature": "Yes",
+                  "Day": 1
+                }
+              ]
+            },
+            "step_action_removed": [],
+            "step_action_added": [],
+            "id": 81,
+            "model": "Add email",
+            "step": [
+              2,
+              1
+            ]
+          },
+          {
+            "step_action_updated": {
+              "added": [],
+              "removed": []
+            },
+            "step_action_removed": [],
+            "step_action_added": [
+              {
+                "Title": "Follow up 22",
+                "owner": "mudhabir",
+                "Time": "08:29",
+                "Day": 1
+              }
+            ],
+            "steps_condition_operator": [
+              null,
+              "AND"
+            ],
+            "steps_condition_updated": {
+              "removed": [],
+              "added": []
+            },
+            "steps_condition_added": [
+              {
+                "attribute": "if replied",
+                "value": "step 1"
+              }
+            ],
+            "steps_condition_removed": [],
+            "id": 84,
+            "model": "Add follow up",
+            "step": [
+              null,
+              2
+            ]
+          }
+        ]
+      },
+      "system_changes": {},
+      "misc_changes": {}
+    }
+  }
+}</pre>
+ </div>
+</div><p><strong><br class="auto-cursor-target"/></strong></p>
