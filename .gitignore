@@ -1,6 +1,9 @@
 #Output Directories
+**/docs
 docs/
+**/errors
 errors/
+**/htmlOutput
 htmlOutput/
 
 # Logs

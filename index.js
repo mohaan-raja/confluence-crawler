@@ -11,7 +11,7 @@ const baseUrl = "https://confluence.freshworks.com";
 const spaceEndpoint = "rest/api/space";
 const pageUrl = `rest/api/content`;
 const spaceUrl = `${pageUrl}?spaceKey=${spaceKey}`;
-const htmlOutputDir = "htmlOuput";
+const htmlOutputDir = "htmlOutput";
 const errorOutputDir = "errors";
 const docsOutputDir = "docs";
 const CONF_ACCESS_TOKEN = "NjM1Njg5MTY0NjA3OsUCrcB/46nsuUEGPYbvhxknbyTN";
@@ -240,7 +240,7 @@ if (options.spaceKey) {
       GetAllConfluenceDocsForGivenSpaceKey(baseUrl, `/${spaceUrl}&start=0&limit=500`)
      }
      else {
-        console.log(`${sapceKey} doesn't exists. Exiting...`)
+        console.log(`${spaceKey} doesn't exists. Exiting...`)
         exit(1);
      }
   })
