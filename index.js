@@ -13,7 +13,11 @@ const spaceUrl = `${pageEndpoint}?spaceKey=`;
 const htmlOutputDir = "htmlOutput";
 const errorOutputDir = "errors";
 const docsOutputDir = "docs";
-const CONF_ACCESS_TOKEN = "NjM1Njg5MTY0NjA3OsUCrcB/46nsuUEGPYbvhxknbyTN";
+
+// Create your Confluence Token using the below details
+// https://confluence.atlassian.com/enterprise/using-personal-access-tokens-1026032365.html
+// Ex: https://confluence.<org-domain>.com/plugins/personalaccesstokens/usertokens.action
+const CONF_ACCESS_TOKEN = "<ADD_YOUR_CONFLUENCE_TOKEN_HERE>";
 const imageRegex = /<img[^>]+src="([^">]+)"/ig;
 const headers = {
     'Content-Type': 'application/json',
@@ -23,12 +27,13 @@ const headers = {
 program
   .option('-s, --spaceKey <type>', 'Confluence space-key to extract all the pages under the space')
   .option('-p, --pageId <type>', 'Confluence page id to extract all the contents under the page')
+  .option('-d, --debugImageConversion', 'Deobug flag for my troubleshooting...')
 
 program.parse(process.argv);
 
 const options = program.opts();
 
-console.log('Creating output directories....')
+console.log('Creating/Validating output directories....')
 try {
   !fs.existsSync(docsOutputDir) && fs.mkdirSync(docsOutputDir);
   !fs.existsSync(htmlOutputDir) && fs.mkdirSync(htmlOutputDir);
@@ -38,7 +43,7 @@ catch (error) {
   console.log("Directory creation failed... Exiting!")
   exit(1);
 }
-console.log('Directories created successfully.')
+console.log("Output directories are ready.")
 
 // Function to extract the pages based on the given spaceKey
 const getAllConfluenceDocsForGivenSpaceKey = (baseUrl, spaceKey, next) => {
@@ -106,28 +111,34 @@ async function imageUrlToBase64(url, headers) {
 // Reconstruct the image src attribute with inline image as data value
 // This helps avoiding the authetication errors during image fetch requests
 // as the images are behind freshworks confluence
-const imageReplacer = async (match, ...args) => {
+const imageReplacer = async (match, isTitleValid, pageId, ...args) => {
     try {
-    const imgSrcRegex = 'src\s*=\s*"([^"]+)"'
-    const imgMatches = match.match(imgSrcRegex)
-    const imgSrcUrl = imgMatches[1]
-    // console.log(imgSrcUrl)
-    const base64 = await imageUrlToBase64(imgSrcUrl, headers)
-    const dataUrl = `${base64}` //`data:image/png;base64,${base64}`;
-    const parsedContents = match.replace(imageRegex, (m) => m.replace(imgSrcUrl, dataUrl));
-    return parsedContents
+      const imgSrcRegex = 'src\s*=\s*"([^"]+)"'
+      const imgMatches = match.match(imgSrcRegex)
+
+      let imgSrcUrl = imgMatches[1]
+      if (!isTitleValid) {
+        imageName = imgSrcUrl.substring(imgSrcUrl.lastIndexOf('/') + 1)
+        imgSrcUrl = `https://confluence.freshworks.com/download/attachments/${pageId}/${imageName}`;
+      }
+
+      const base64 = await imageUrlToBase64(imgSrcUrl, headers)
+      const dataUrl = `${base64}` //`data:image/png;base64,${base64}`;
+
+      const parsedContents = match.replace(imageRegex, (m) => m.replace(imgMatches[1], dataUrl));
+      return parsedContents
     } catch (err) {
-      console.log(`Received error during imageReplace for ${match} with error ${err}`);
+        console.log(`Received error during imageReplace for ${match} with error ${err}`);
     }
 }
 
 // Container function to fire all the image reconstructions
 // Uses promises to collect all the responses and create the 
 // html file with images inline (i.e. at appropriate position as in confluence page)
-async function replaceAsync(str, regex, asyncFn) {
+async function replaceAsync(str, regex, asyncFn, isTitleValid, pageId) {
   const promises = [];
   str.replace(regex, (full, ...args) => {
-      promises.push(asyncFn(full, ...args));
+      promises.push(asyncFn(full, isTitleValid, pageId, ...args));
       return full;
   });
   const data = await Promise.all(promises);
@@ -143,13 +154,14 @@ const retrievePageById = async (pageId) => {
     .then((response) => {
       const res = response.data
       const htmlContent = `<h1>Title: ${res.title}</h1>` + res.body.export_view.value
+      const isTitleValid = res.title.indexOf('/') == -1 ? true : false;
 
       // Restricting the fileName to 50 chars to not exceed the limit 
       // of the absolute path which will used during file creation
       let fileName = res.title.replace(/[^a-zA-Z0-9]/g,'_');
           fileName = fileName.split('', 50).join('');
 
-      replaceAsync(htmlContent, imageRegex, imageReplacer)
+      replaceAsync(htmlContent, imageRegex, imageReplacer, isTitleValid, pageId)
         .then(replacedString => {
           
           fse.outputFile(`${htmlOutputDir}/${fileName}.html`, replacedString, {flag: 'a+'}, err => {
@@ -248,7 +260,7 @@ if (options.pageId) {
   console.log(`Command is to crawl the confluence page ${pageId}... \nValidating the existence of page...`)
   isExistingEntity(`${baseUrl}/${pageEndpoint}/${pageId}`, (err, res) => {
     if (res) {
-      console.log("${pageId} exists... Proceeding for extraction.")
+      console.log(`${pageId} exists... Proceeding for extraction.`)
       retrievePageById(pageId)
      }
      else {
@@ -257,3 +269,9 @@ if (options.pageId) {
      }
   })
 }
+
+if (options.debugImageConversion) {
+  // Any debug / troubleshooting can be done using this key "-d"
+  imageUrlToBase64("https://confluence.freshworks.com/download/attachments/310276736/image2021-7-1_23-30-46.png?api=v2", headers);
+}
+
